@@ -1,12 +1,8 @@
 """topology.py构造大量节点的超立方体拓扑、总线拓扑、环形拓扑
 """
-import argparse
 import os
 
-parser = argparse.ArgumentParser()
-parser.add_argument("-topology", help="please choose from hybercube, bus and ring", default="hybercube", type=str)
-parser.add_argument("-dim", help="mainly refer to hybercube topology, will produce a config file contains 2^dim nodes", default=2, type=int)
-args = parser.parse_args()
+
 masterAddr = os.environ.get("MASTER")
 slaveAddr = os.environ.get("SLAVE")
 
@@ -44,7 +40,7 @@ def construct_hybercube_cluster(ip: str, port1: int, port2: int, no: int, dim: i
         return [Node(f'Node{no}', ip, port1, masterAddr, '30000', port2, [])]
     if dim == 1:  # 奇数维度超立方体拓扑递归终点
         node1 = Node(f'Node{no}', ip, port1, masterAddr, '30000', port2, [])
-        node2 = Node(f'Node{no + 1}', ip, port1 + 1, 'masterAddr', '30000', port2 + 1, [])
+        node2 = Node(f'Node{no + 1}', ip, port1 + 1, masterAddr, '30000', port2 + 1, [])
         node1.add_neighbor(node2.address())
         node2.add_neighbor(node1.address())
         return [node1, node2]
@@ -85,7 +81,7 @@ def construct_bus_cluster(ip: str, port1: int, port2: int, no: int, dim: int):
     node_nums = 2 ** dim
     before_node = None
     for i in range(node_nums):
-        node = Node(f'Node{no + i}', ip, port1 + i, masterAddr, '30000', [])
+        node = Node(f'Node{no + i}', ip, port1 + i, masterAddr, '30000', port2 + i, [])
         if before_node:
             node.add_neighbor(before_node.address())
             before_node.add_neighbor(node.address())
@@ -128,15 +124,15 @@ def construct_ring(addrs: str, dim: int):
 def create_topology(topology: str, dim: int):
     # 输入数据检查
     assert topology in ['hybercube', 'ring', 'bus']
-    assert dim > 1 and type(args.dim) == int
+    assert dim > 1 and type(dim) == int
     addr = f"{masterAddr}:30000:30500,{slaveAddr}:30000:30500"
-    if args.topology == 'hybercube':
-        nodes = construct_hybercube(addr, args.dim)
-    elif args.topology == 'bus':
-        nodes = construct_bus(addr, args.dim)
+    if topology == 'hybercube':
+        nodes = construct_hybercube(addr, dim)
+    elif topology == 'bus':
+        nodes = construct_bus(addr, dim)
     else:
-        nodes = construct_ring(addr, args.dim)
-    with open(f'config/{args.topology}-{args.dim}.ini', 'w') as f:
+        nodes = construct_ring(addr, dim)
+    with open(f'config/{topology}-{dim}.ini', 'w') as f:
         for node in nodes:
             f.write(node.str())
             

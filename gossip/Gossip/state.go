@@ -668,15 +668,7 @@ func (m *Memberlist) pushPull() {
 	// return // just for test
 	// Get a random live node
 	m.nodeLock.RLock()
-	// 修改备选集合实现适应拓扑
-	neighbors := make([]*nodeState, 0)
-	for _, node := range m.nodes {
-		nodeAddr := node.Node.Address()
-		if find(m.neighbors, nodeAddr) != -1 {
-			neighbors = append(neighbors, node)
-		}
-	}
-	nodes := kRandomNodes(1, neighbors, func(n *nodeState) bool {
+	nodes := kRandomNodes(1, m.nodes, func(n *nodeState) bool {
 		return n.Name == m.config.Name ||
 			n.State != StateAlive
 	})
