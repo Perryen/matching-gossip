@@ -16,14 +16,13 @@
     - `vendor`存放程序运行所需要的第三方包
     - `go.mod`和`go.sum`是go项目关于依赖的一些文件
     - `main.go`是启动函数
- - `MGossip` 目录存放matching-gossip实验代码（下级目录同上）
+ - `mgossip` 目录存放matching-gossip实验代码（下级目录同上）
  - `calculate.py` 是用来读取日志文件计算实验指标的脚本
  - `clean_data.py` 是用来进一步整理实验数据计算平均值、去头尾平均值等指标的脚本
  - `run.sh`是一键部署实验的脚本，注意，脚本中的路径、密码等需要根据实际条件设置
  - `master.py`和`slave.py`配对出现，分别用于主服务器和从服务器，是一个协调多主机批量重复实验的脚本
  - `topology.py`是一个快速构造指定维度指定拓扑的脚本，输出为config目录下的ini配置文件
  - `Dockerfile`是打包镜像的文件，可以参考本文件配置实验环境
- - `images`存放本实验的docker镜像
 
 ### 实验环境搭建
 如果你对linux系统比较熟悉，可以执行搭建实验环境。我们也提供了Docker容器（推荐），更容易地进行实验。

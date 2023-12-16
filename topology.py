@@ -4,7 +4,7 @@ import os
 
 
 masterAddr = os.environ.get("MASTER")
-slaveAddr = os.environ.get("SLAVE")
+slaveAddrs = os.environ.get("SLAVES")
 
 
 class Node:
@@ -35,12 +35,15 @@ class Node:
     
     
 # 递归构造超立方体拓扑，单一IP地址  
-def construct_hybercube_cluster(ip: str, port1: int, port2: int, no: int, dim: int):
+def construct_hybercube_cluster(addrs, dim: int, no: int, port1: int, port2: int):
     if dim == 0: # 偶数维度超立方体拓扑递归终点
-        return [Node(f'Node{no}', ip, port1, masterAddr, '30000', port2, [])]
+        return [Node(f'Node{no}', addrs[0], port1, masterAddr, '30000', port2, [])]
     if dim == 1:  # 奇数维度超立方体拓扑递归终点
-        node1 = Node(f'Node{no}', ip, port1, masterAddr, '30000', port2, [])
-        node2 = Node(f'Node{no + 1}', ip, port1 + 1, masterAddr, '30000', port2 + 1, [])
+        node1 = Node(f'Node{no}', addrs[0], port1, masterAddr, '30000', port2, [])
+        if len(addrs) == 1:
+            node2 = Node(f'Node{no + 1}', addrs[0], port1 + 1, masterAddr, '30000', port2 + 1, [])
+        else:
+            node2 = Node(f'Node{no + 1}', addrs[1], port1, masterAddr, '30000', port2, [])
         node1.add_neighbor(node2.address())
         node2.add_neighbor(node1.address())
         return [node1, node2]
@@ -48,40 +51,35 @@ def construct_hybercube_cluster(ip: str, port1: int, port2: int, no: int, dim: i
     nodes = []
     cluster_nums = 2 ** (dim - 2)
     node_nums = 2 ** dim
-    for i in range(4):  # 正方形递归
-        nodes.extend(construct_hybercube_cluster(ip, port1 + cluster_nums * i, port2 + cluster_nums * i, no + cluster_nums * i, dim - 2))
+    if len(addrs) >= 4:
+        for i in range(4):
+            nodes.extend(construct_hybercube_cluster(addrs[i * len(addrs) // 4: (i + 1) * len(addrs) // 4], dim - 2, no + i * cluster_nums, port1, port2)) 
+    else:
+        for i in range(4):
+            bias = i % (4 // len(addrs))
+            nodes.extend(construct_hybercube_cluster([addrs[i // (4 // len(addrs))]], dim - 2, no + i * cluster_nums, port1 + bias * cluster_nums, port2 + bias * cluster_nums)) 
     for i, node in enumerate(nodes):  # 设置各个节点相应的邻居节点
         node.add_neighbor(nodes[(i + cluster_nums) % node_nums].address())
         node.add_neighbor(nodes[(i - cluster_nums + node_nums) % node_nums].address())
     return nodes
     
 # 与上一个函数类似，只不过因为要在两个主机上构造拓扑     
-def construct_hybercube(addrs: str, dim: int):
-    addrs = addrs.split(",")
-    ip1, port1, port2 = addrs[0].split(':')
-    ip2, port3, port4 = addrs[1].split(':')
-    port1, port2, port3, port4 = int(port1), int(port2), int(port3), int(port4)
+def construct_hybercube(addrs, dim: int):
     node_nums = 2 ** dim
-    cluster_nums = 2 ** (dim - 2)
-    nodes = []
-    for i in range(4):
-        if i < 2:
-            nodes.extend(construct_hybercube_cluster(ip1, port1 + cluster_nums * i, port2 + cluster_nums * i, 1 + cluster_nums * i, dim - 2))
-        else:
-            nodes.extend(construct_hybercube_cluster(ip2, port3 + cluster_nums * (i // 3), port4 + cluster_nums * (i // 3), 1 + cluster_nums * i, dim - 2))
-    for i, node in enumerate(nodes):
-        node.add_neighbor(nodes[(i + cluster_nums) % node_nums].address())
-        node.add_neighbor(nodes[(i - cluster_nums + node_nums) % node_nums].address())
-    return nodes
+    if len(addrs) >= node_nums:
+        return construct_hybercube_cluster(addrs[: node_nums], dim, 1, 30000, 30500)
+    else:
+        return construct_hybercube_cluster(addrs, dim, 1, 30000, 30500)     
+    
 
-           
 # 构造总线拓扑      
-def construct_bus_cluster(ip: str, port1: int, port2: int, no: int, dim: int):
+def construct_bus_cluster(addrs, dim: int, no: int, port1: int, port2: int):
     nodes = []
     node_nums = 2 ** dim
+    cluster_nums = node_nums // len(addrs)
     before_node = None
     for i in range(node_nums):
-        node = Node(f'Node{no + i}', ip, port1 + i, masterAddr, '30000', port2 + i, [])
+        node = Node(f'Node{no + i}', addrs[i // cluster_nums], port1 + i % cluster_nums, masterAddr, '30000', port2 + i % cluster_nums, [])
         if before_node:
             node.add_neighbor(before_node.address())
             before_node.add_neighbor(node.address())
@@ -89,59 +87,51 @@ def construct_bus_cluster(ip: str, port1: int, port2: int, no: int, dim: int):
         nodes.append(node)
     return nodes
 
-
 # 构造总线拓扑
-def construct_bus(addrs: str, dim: int):
-    addrs = addrs.split(",")
-    ip1, port1, port2 = addrs[0].split(':')
-    ip2, port3, port4 = addrs[1].split(':')
-    port1, port2, port3, port4 = int(port1), int(port2), int(port3), int(port4)
+def construct_bus(addrs, dim: int):
     node_nums = 2 ** dim
-    nodes = []
-    nodes.extend(construct_bus_cluster(ip1, port1, port2, 1, dim - 1))
-    nodes.extend(construct_bus_cluster(ip2, port3, port4, 1 + node_nums // 2, dim - 1))
-    nodes[node_nums // 2].add_neighbor(nodes[node_nums // 2 + 1].address())
-    nodes[node_nums // 2 + 1].add_neighbor(nodes[node_nums // 2].address())
+    if len(addrs) >= node_nums:
+        nodes = construct_bus_cluster(addrs[: node_nums], dim, 1, 30000, 30500)
+    else:
+        nodes = construct_bus_cluster(addrs, dim, 1, 30000, 30500)
     return nodes
 
 
 # 构造环形拓扑
-def construct_ring(addrs: str, dim: int):
-    addrs = addrs.split(",")
-    ip1, port1, port2 = addrs[0].split(':')
-    ip2, port3, port4 = addrs[1].split(':')
-    port1, port2, port3, port4 = int(port1), int(port2), int(port3), int(port4)
+def construct_ring(addrs, dim: int):
     node_nums = 2 ** dim
-    nodes = []
-    nodes.extend(construct_bus_cluster(ip1, port1, port2, 1, dim - 1))
-    nodes.extend(construct_bus_cluster(ip2, port3, port4, 1 + node_nums // 2, dim - 1))
-    nodes[node_nums // 2].add_neighbor(nodes[node_nums // 2 + 1].address())
-    nodes[node_nums // 2 + 1].add_neighbor(nodes[node_nums // 2].address())
+    if len(addrs) >= node_nums:
+        nodes = construct_bus_cluster(addrs[: node_nums], dim, 1, 30000, 30500)
+    else:
+        nodes = construct_bus_cluster(addrs, dim, 1, 30000, 30500)
     nodes[0].add_neighbor(nodes[-1].address())
     nodes[-1].add_neighbor(nodes[0].address())
     return nodes
     
-def create_topology(topology: str, dim: int):
+    
+def create_topology(topology: str, dim: int, addrs):
     # 输入数据检查
     assert topology in ['hybercube', 'ring', 'bus']
     assert dim > 1 and type(dim) == int
-    addr = f"{masterAddr}:30000:30500,{slaveAddr}:30000:30500"
     if topology == 'hybercube':
-        nodes = construct_hybercube(addr, dim)
+        nodes = construct_hybercube(addrs, dim)
     elif topology == 'bus':
-        nodes = construct_bus(addr, dim)
+        nodes = construct_bus(addrs, dim)
     else:
-        nodes = construct_ring(addr, dim)
+        nodes = construct_ring(addrs, dim)
     with open(f'config/{topology}-{dim}.ini', 'w') as f:
         for node in nodes:
             f.write(node.str())
             
             
 def main():
-    create_topology('bus', 4)
-    create_topology('ring', 4)
-    for i in range(2, 10):
-        create_topology('hybercube', i)
+    slave_addrs = slaveAddrs.split(":")
+    nodes = [str(masterAddr)]
+    nodes.extend(slave_addrs)
+    for i in range(2, 11):
+        create_topology('hybercube', i, nodes)
+        create_topology('bus', i, nodes)
+        create_topology('ring', i, nodes)
             
     
 if __name__ == '__main__':
