@@ -796,7 +796,7 @@ func (m *Memberlist) handlePong(buf []byte, from net.Addr) {
 // handleNeighbor is used to handle NeighborMsg
 func (m *Memberlist) handleNeighbor(buf []byte, from net.Addr) {
 	m.neighbors = append(m.neighbors, from.String())
-	log.Println("更新后的邻居节点列表：", m.neighbors)
+	log.Println("the neighbors list after updated:", m.neighbors)
 }
 
 // handleCompressed is used to unpack a compressed message

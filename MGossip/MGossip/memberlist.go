@@ -845,7 +845,7 @@ func (m *Memberlist) SelectNearestNeighbor(nodeNum int) {
 	nodeNum = min(nodeNum, len(nodes))
 	for _, node := range nodes[: nodeNum] {
 		m.neighbors = append(m.neighbors, node)
-		log.Println("更新后的邻居列表：", m.neighbors)
+		log.Println("the neighbors list after updated", m.neighbors)
 		msg := fmt.Sprintf("Neighbor: neighbor conn from %s:%d", m.config.BindAddr, m.config.BindPort)
 		for _, each_node := range m.nodes {
 			if each_node.Address() == node {
