@@ -805,6 +805,18 @@ func (m *Memberlist) checkBroadcastQueueDepth() {
 	}
 }
 
+func (m *Memberlist) SendMsg(to *Node, msg []byte, msgType messageType) error {
+	// add messageType to the header
+	buf := make([]byte, 1, len(msg) + 1)
+	buf[0] = byte(msgType)
+	buf = append(buf, msg...)
+
+	// send the packet
+	a := Address{Addr: to.Address(), Name: to.Name}
+	return m.rawSendMsgPacket(a, to, buf)
+}
+
+
 
 // automatically ping all the nodes and select the minimum cost time, connected to each other
 func (m *Memberlist) SelectNearestNeighbor(nodeNum int) {
@@ -820,7 +832,7 @@ func (m *Memberlist) SelectNearestNeighbor(nodeNum int) {
 			m.logger.Printf("[ERR] memberlist: Push/Pull with %s failed: %s", node.Name, err)
 		}
 		msg := fmt.Sprintf("Ping: ping from %s:%d", m.config.BindAddr, m.config.BindPort)
-		m.SendBestEffort(&node.Node, []byte(msg))
+		m.SendMsg(&node.Node, []byte(msg), pingNodeMsg)
 		m.respTime[node.Address()] = time.Now().UnixMicro()
 		nodes = append(nodes, node.Address())
 	}
@@ -833,11 +845,11 @@ func (m *Memberlist) SelectNearestNeighbor(nodeNum int) {
 	nodeNum = min(nodeNum, len(nodes))
 	for _, node := range nodes[: nodeNum] {
 		m.neighbors = append(m.neighbors, node)
-		fmt.Println(m.neighbors)
+		log.Println("更新后的邻居列表：", m.neighbors)
 		msg := fmt.Sprintf("Neighbor: neighbor conn from %s:%d", m.config.BindAddr, m.config.BindPort)
 		for _, each_node := range m.nodes {
 			if each_node.Address() == node {
-				m.SendBestEffort(&each_node.Node, []byte(msg))
+				m.SendMsg(&each_node.Node, []byte(msg), neighborMsg)
 			}
 		}
 	}

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"hash/crc32"
 	"io"
+	"log"
 	"math"
 	"net"
 	"sync/atomic"
@@ -61,6 +62,9 @@ const (
 	nackRespMsg
 	hasCrcMsg
 	errMsg
+	pingNodeMsg
+	pongMsg
+	neighborMsg
 )
 
 const (
@@ -447,6 +451,12 @@ func (m *Memberlist) handleCommand(buf []byte, from net.Addr, timestamp time.Tim
 		fallthrough
 	case deadMsg:
 		fallthrough
+	case pingNodeMsg:
+		fallthrough
+	case pongMsg:
+		fallthrough
+	case neighborMsg:
+		fallthrough
 	case userMsg:
 		// Determine the message queue, prioritize alive
 		queue := m.lowPriorityMsgQueue
@@ -517,6 +527,12 @@ func (m *Memberlist) packetHandler() {
 					m.handleDead(buf, from)
 				case userMsg:
 					m.handleUser(buf, from)
+				case pingNodeMsg:
+					m.handlePingNode(buf, from)
+				case pongMsg:
+					m.handlePong(buf, from)
+				case neighborMsg:
+					m.handleNeighbor(buf, from)
 				default:
 					m.logger.Printf("[ERR] memberlist: Message type (%d) not supported %s (packet handler)", msgType, LogAddress(from))
 				}
@@ -753,31 +769,34 @@ func (m *Memberlist) handleDead(buf []byte, from net.Addr) {
 func (m *Memberlist) handleUser(buf []byte, from net.Addr) {
 	fmt.Println(string(buf))
 	d := m.config.Delegate
-	if d != nil && buf[0] == 'd' {
+	if d != nil {
 		d.NotifyMsg(buf)
-	} else {
-		if buf[0] == 'P' {
-			if buf[1] == 'i' {
-				msg := fmt.Sprintf("Pong: from %s:%d", m.config.BindAddr, m.config.BindPort)
-				//time.Sleep(3 * time.Second)
-				for _, node := range m.nodes {
-					if node.Address() == from.String() {
-						m.SendBestEffort(&node.Node, []byte(msg))
-						break
-					}
-				}
-			} else if buf[1] == 'o' {
-				nowTime := time.Now().UnixMicro()
-				if m.respTime[from.String()] > 0 && nowTime > m.respTime[from.String()] {
-					m.respTime[from.String()] = nowTime - m.respTime[from.String()]
-				}
-			}
-			
-		} else if buf[0] == 'N' {
-			m.neighbors = append(m.neighbors, from.String())
-			fmt.Println(m.neighbors)
+	}
+}
+
+// handlePingNode is used to handle pingNodeMsg
+func (m *Memberlist) handlePingNode(buf []byte, from net.Addr) {
+	msg := fmt.Sprintf("Pong: from %s:%d", m.config.BindAddr, m.config.BindPort)
+	for _, node := range m.nodes {
+		if node.Address() == from.String() {
+			m.SendMsg(&node.Node, []byte(msg), pongMsg)
+			break
 		}
 	}
+}
+
+// handlePong is used to handle pongMsg
+func (m *Memberlist) handlePong(buf []byte, from net.Addr) {
+	nowTime := time.Now().UnixMicro()
+	if m.respTime[from.String()] > 0 && nowTime > m.respTime[from.String()] {
+		m.respTime[from.String()] = nowTime - m.respTime[from.String()]
+	}
+}
+
+// handleNeighbor is used to handle NeighborMsg
+func (m *Memberlist) handleNeighbor(buf []byte, from net.Addr) {
+	m.neighbors = append(m.neighbors, from.String())
+	log.Println("更新后的邻居节点列表：", m.neighbors)
 }
 
 // handleCompressed is used to unpack a compressed message
