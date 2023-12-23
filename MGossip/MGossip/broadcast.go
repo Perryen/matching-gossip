@@ -1,4 +1,4 @@
-package MGossip
+package mgossip
 
 /*
 The broadcast mechanism works by maintaining a sorted list of messages to be

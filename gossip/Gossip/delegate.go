@@ -1,4 +1,4 @@
-package Gossip
+package gossip
 
 // Delegate is the interface that clients must implement if they want to hook
 // into the gossip layer of Memberlist. All the methods must be thread-safe,

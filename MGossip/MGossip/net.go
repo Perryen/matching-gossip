@@ -1,4 +1,4 @@
-package MGossip
+package mgossip
 
 import (
 	"bufio"
@@ -470,6 +470,7 @@ func (m *Memberlist) handleCommand(buf []byte, from net.Addr, timestamp time.Tim
 		}
 
 	default:
+		fmt.Println(string(buf))
 		m.logger.Printf("[ERR] memberlist: msg type (%d) not supported %s", msgType, LogAddress(from))
 	}
 }
@@ -750,9 +751,32 @@ func (m *Memberlist) handleDead(buf []byte, from net.Addr) {
 
 // handleUser is used to notify channels of incoming user data
 func (m *Memberlist) handleUser(buf []byte, from net.Addr) {
+	fmt.Println(string(buf))
 	d := m.config.Delegate
-	if d != nil {
+	if d != nil && buf[0] == 'd' {
 		d.NotifyMsg(buf)
+	} else {
+		if buf[0] == 'P' {
+			if buf[1] == 'i' {
+				msg := fmt.Sprintf("Pong: from %s:%d", m.config.BindAddr, m.config.BindPort)
+				//time.Sleep(3 * time.Second)
+				for _, node := range m.nodes {
+					if node.Address() == from.String() {
+						m.SendBestEffort(&node.Node, []byte(msg))
+						break
+					}
+				}
+			} else if buf[1] == 'o' {
+				nowTime := time.Now().UnixMicro()
+				if m.respTime[from.String()] > 0 && nowTime > m.respTime[from.String()] {
+					m.respTime[from.String()] = nowTime - m.respTime[from.String()]
+				}
+			}
+			
+		} else if buf[0] == 'N' {
+			m.neighbors = append(m.neighbors, from.String())
+			fmt.Println(m.neighbors)
+		}
 	}
 }
 

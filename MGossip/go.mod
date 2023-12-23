@@ -1,4 +1,4 @@
-module github.com/zhuohuashiyi/MGossip
+module github.com/zhuohuashiyi/mgossip
 
 go 1.21
 

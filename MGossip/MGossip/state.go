@@ -1,4 +1,4 @@
-package MGossip
+package mgossip
 
 import (
 	"bytes"
@@ -667,7 +667,6 @@ func (m *Memberlist) gossip() {
 // with the other node.
 // 反熵传播
 func (m *Memberlist) pushPull() {
-	// return // just for test
 	// Get a random live node
 	m.nodeLock.RLock()
 	// 修改备选集合实现适应拓扑
