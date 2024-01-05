@@ -52,67 +52,67 @@ sudo source /etc/profile
 sudo chmod 777 run.sh  # 授予run.sh可执行权限
 
 # 以下是当次实验的命令，每四行为一组，前两行为mgossip实验，后两行是同等配置下gossip实验，第一行和第三行运行在主服务器上，第二、四行运行在从服务器上，可能需要现在一些工具请参考dockerfile文件。同时请确保从服务器运行了ssh服务
-bash run.sh mgossip config/hybercube-2.ini 1 2 1 30000 30500 2 200000000 2
-bash run.sh mgossip config/hybercube-2.ini 3 4 0 30000 30500 2 200000000 2
+bash run.sh mgossip config/hybercube-2.ini 1 2 1 30000 30500 2 200000000 
+bash run.sh mgossip config/hybercube-2.ini 3 4 0 30000 30500 2 200000000
 
-bash run.sh gossip config/hybercube-2.ini 1 2 1 30000 30500 2 200000000 2
-bash run.sh gossip config/hybercube-2.ini 3 4 0 30000 30500 2 200000000 2
-
-
-bash run.sh mgossip config/hybercube-3.ini 1 4 1 30000 30500 2 500000000 4
-bash run.sh mgossip config/hybercube-3.ini 5 8 0 30000 30500 2 500000000 4
-
-bash run.sh gossip config/hybercube-3.ini 1 4 1 30000 30500 2 500000000 4
-bash run.sh gossip config/hybercube-3.ini 5 8 0 30000 30500 2 500000000 4
-
-bash run.sh mgossip config/hybercube-4.ini 1 8 1 30000 30500 2 1000000000 8
-bash run.sh mgossip config/hybercube-4.ini 9 16 0 30000 30500 2 1000000000 8
-
-bash run.sh gossip config/hybercube-4.ini 1 8 1 30000 30500 2 1000000000 8
-bash run.sh gossip config/hybercube-4.ini 9 16 0 30000 30500 2 1000000000 8
-
-bash run.sh mgossip config/hybercube-5.ini 1 16 1 30000 30500 2 2000000000 16
-bash run.sh mgossip config/hybercube-5.ini 17 32 0 30000 30500 2 2000000000 16
-
-bash run.sh gossip config/hybercube-5.ini 1 16 1 30000 30500 2 2000000000 16
-bash run.sh gossip config/hybercube-5.ini 17 32 0 30000 30500 2 2000000000 16
-
-bash run.sh mgossip config/hybercube-6.ini 1 32 1 30000 30500 2 2000000000 32
-bash run.sh mgossip config/hybercube-6.ini 33 64 0 30000 30500 2 2000000000 32
-
-bash run.sh gossip config/hybercube-6.ini 1 32 1 30000 30500 2 2000000000 32
-bash run.sh gossip config/hybercube-6.ini 33 64 0 30000 30500 2 2000000000 32
-
-bash run.sh mgossip config/hybercube-7.ini 1 64 1 30000 30500 2 4000000000 64
-bash run.sh mgossip config/hybercube-7.ini 65 128 0 30000 30500 2 4000000000 64
-
-bash run.sh gossip config/hybercube-7.ini 1 64 1 30000 30500 2 4000000000 64
-bash run.sh gossip config/hybercube-7.ini 65 128 0 30000 30500 2 4000000000 64
-
-bash run.sh mgossip config/hybercube-8.ini 1 128 1 30000 30500 2 8000000000 128
-bash run.sh mgossip config/hybercube-8.ini 129 256 0 30000 30500 2 8000000000 128
-
-bash run.sh gossip config/hybercube-8.ini 1 128 1 30000 30500 2 8000000000 128
-bash run.sh gossip config/hybercube-8.ini 129 256 0 30000 30500 2 8000000000 128
-
-bash run.sh mgossip config/hybercube-9.ini 1 256 1 30000 30500 2 10000000000 256
-bash run.sh mgossip config/hybercube-9.ini 257 512 0 30000 30500 2 10000000000 256
-
-bash run.sh gossip config/hybercube-9.ini 1 256 1 30000 30500 2 2000000000 512
-bash run.sh gossip config/hybercube-9.ini 257 512 0 30000 30500 2 2000000000 512
-
-bash run.sh mgossip config/bus.ini 1 8 1 30000 30500 2 1000000000 8
-bash run.sh mgossip config/bus.ini 9 16 0 30000 30500 2 1000000000 8
-
-bash run.sh gossip config/bus.ini 1 8 1 30000 30500 2 1000000000 8
-bash run.sh gossip config/bus.ini 9 16 0 30000 30500 2 1000000000 8
+bash run.sh gossip config/hybercube-2.ini 1 2 1 30000 30500 2 200000000
+bash run.sh gossip config/hybercube-2.ini 3 4 0 30000 30500 2 200000000 
 
 
-bash run.sh mgossip config/ring.ini 1 8 1 30000 30500 2 1000000000 8
-bash run.sh mgossip config/ring.ini 9 16 0 30000 30500 2 1000000000 8
+bash run.sh mgossip config/hybercube-3.ini 1 4 1 30000 30500 2 500000000
+bash run.sh mgossip config/hybercube-3.ini 5 8 0 30000 30500 2 500000000
 
-bash run.sh gossip config/ring.ini 1 8 1 30000 30500 2 1000000000 8
-bash run.sh gossip config/ring.ini 9 16 0 30000 30500 2 1000000000 8
+bash run.sh gossip config/hybercube-3.ini 1 4 1 30000 30500 2 500000000
+bash run.sh gossip config/hybercube-3.ini 5 8 0 30000 30500 2 500000000
+
+bash run.sh mgossip config/hybercube-4.ini 1 8 1 30000 30500 2 1000000000
+bash run.sh mgossip config/hybercube-4.ini 9 16 0 30000 30500 2 1000000000
+
+bash run.sh gossip config/hybercube-4.ini 1 8 1 30000 30500 2 1000000000
+bash run.sh gossip config/hybercube-4.ini 9 16 0 30000 30500 2 1000000000
+
+bash run.sh mgossip config/hybercube-5.ini 1 16 1 30000 30500 2 2000000000
+bash run.sh mgossip config/hybercube-5.ini 17 32 0 30000 30500 2 2000000000
+
+bash run.sh gossip config/hybercube-5.ini 1 16 1 30000 30500 2 2000000000 
+bash run.sh gossip config/hybercube-5.ini 17 32 0 30000 30500 2 2000000000 
+
+bash run.sh mgossip config/hybercube-6.ini 1 32 1 30000 30500 2 2000000000 
+bash run.sh mgossip config/hybercube-6.ini 33 64 0 30000 30500 2 2000000000 
+
+bash run.sh gossip config/hybercube-6.ini 1 32 1 30000 30500 2 2000000000 
+bash run.sh gossip config/hybercube-6.ini 33 64 0 30000 30500 2 2000000000 
+
+bash run.sh mgossip config/hybercube-7.ini 1 64 1 30000 30500 2 4000000000 
+bash run.sh mgossip config/hybercube-7.ini 65 128 0 30000 30500 2 4000000000 
+
+bash run.sh gossip config/hybercube-7.ini 1 64 1 30000 30500 2 4000000000 
+bash run.sh gossip config/hybercube-7.ini 65 128 0 30000 30500 2 4000000000 
+
+bash run.sh mgossip config/hybercube-8.ini 1 128 1 30000 30500 2 8000000000 
+bash run.sh mgossip config/hybercube-8.ini 129 256 0 30000 30500 2 8000000000 
+
+bash run.sh gossip config/hybercube-8.ini 1 128 1 30000 30500 2 8000000000 
+bash run.sh gossip config/hybercube-8.ini 129 256 0 30000 30500 2 8000000000 
+
+bash run.sh mgossip config/hybercube-9.ini 1 256 1 30000 30500 2 10000000000 
+bash run.sh mgossip config/hybercube-9.ini 257 512 0 30000 30500 2 10000000000 
+
+bash run.sh gossip config/hybercube-9.ini 1 256 1 30000 30500 2 2000000000 
+bash run.sh gossip config/hybercube-9.ini 257 512 0 30000 30500 2 2000000000 
+
+bash run.sh mgossip config/bus.ini 1 8 1 30000 30500 2 1000000000 
+bash run.sh mgossip config/bus.ini 9 16 0 30000 30500 2 1000000000 
+
+bash run.sh gossip config/bus.ini 1 8 1 30000 30500 2 1000000000 
+bash run.sh gossip config/bus.ini 9 16 0 30000 30500 2 1000000000 
+
+
+bash run.sh mgossip config/ring.ini 1 8 1 30000 30500 2 1000000000 
+bash run.sh mgossip config/ring.ini 9 16 0 30000 30500 2 1000000000 
+
+bash run.sh gossip config/ring.ini 1 8 1 30000 30500 2 1000000000 
+bash run.sh gossip config/ring.ini 9 16 0 30000 30500 2 1000000000 
 ```
 
 

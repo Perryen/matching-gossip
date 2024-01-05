@@ -5,8 +5,7 @@ import os
 
 
 app = Flask(__name__)
-slaveAddr = os.environ.get('SLAVE')
-slaveAddr = '127.0.0.1'
+slaveAddr = os.environ.get("SLAVE")
 
 @app.route('/ping', methods=['GET'])
 def ping():

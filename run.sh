@@ -43,7 +43,7 @@ fi
 for ((i=firstNode; i<=endNode; i++)); do
     # 使用nohup在后台运行main.go程序，即运行一个网络节点
     nohup go run main.go -nodeName ${node}${i} -conf $confFile -gossipNodes $gossipNodes > /dev/null 2>&1 &
-    if [[ $isMaster -eq 1 && i -eq firstNode ]]; then  # 种子节点默认是主服务器上的第一个节点
+    if [[ $isMaster -eq 1 && i -ne firstNode ]]; then  # 种子节点默认是主服务器上的第一个节点
         sleep 3
     fi
 done
