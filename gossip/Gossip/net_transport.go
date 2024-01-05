@@ -1,4 +1,4 @@
-package Gossip
+package gossip
 
 import (
 	"bytes"

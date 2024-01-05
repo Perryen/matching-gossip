@@ -1,4 +1,4 @@
-package Gossip
+package gossip
 
 /*
 The broadcast mechanism works by maintaining a sorted list of messages to be

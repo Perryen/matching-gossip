@@ -1,4 +1,4 @@
-package Gossip
+package gossip
 
 // ConflictDelegate is a used to inform a client that
 // a node has attempted to join which would result in a

@@ -1,4 +1,4 @@
-package MGossip
+package mgossip
 
 // EventDelegate is a simpler delegate that is used only to receive
 // notifications about members joining and leaving. The methods in this

@@ -12,7 +12,7 @@ on the protocol. Node failures are detected and network partitions are partially
 tolerated by attempting to communicate to potentially dead nodes through
 multiple routes.
 */
-package Gossip
+package gossip
 
 import (
 	"container/list"

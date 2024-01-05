@@ -19,6 +19,8 @@ class Node:
         
     def __str__(self):
         # 输出配置文件的内容
+        # 不允许绑定公网IP
+        self.bindAddr = '0.0.0.0'
         return f'[{self.nodeName}]\nbindAddr={self.bindAddr}\nbindPort={self.bindPort}\nmemberlistAddr={self.memberlistAddr}\nmemberlistPort={self.memberlistPort}\nneighbors="{",".join(self.neighbors)}"\nport={self.port}\n\n'
     
     def set_neighbors(self, neighbors):

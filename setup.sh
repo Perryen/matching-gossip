@@ -8,11 +8,12 @@ wget https://golang.google.cn/dl/go1.21.3.linux-amd64.tar.gz
 tar -C /usr/local -xzf go1.21.3.linux-amd64.tar.gz
 apt-get -y install python3-pip
 pip3 install flask
+apt-get install -y tmux
 
 # 拉去代码
 cd /root
 git clone https://gitee.com/Perryen/matching-gossip.git
-# 此处需要需要手工输入账号密码
+
 
 # 设置环境变量
 echo 'export PATH="/usr/local/go/bin:${PATH}"' >> /etc/profile
@@ -26,7 +27,7 @@ source /etc/profile
 cd $WORKDIR
 rm -rf config
 rm -rf gossip/config
-rm -rf gossip/config
+rm -rf mgossip/config
 mkdir config
 python3 topology.py
 cp -r config mgossip
