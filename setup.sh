@@ -1,0 +1,33 @@
+# root权限执行
+# 安装必要工具
+apt-get update
+apt-get upgrade
+apt-get -y  install wget
+apt-get -y install git
+wget https://golang.google.cn/dl/go1.21.3.linux-amd64.tar.gz
+tar -C /usr/local -xzf go1.21.3.linux-amd64.tar.gz
+apt-get -y install python3-pip
+pip3 install flask
+
+# 拉去代码
+cd /root
+git clone https://gitee.com/Perryen/matching-gossip.git
+# 此处需要需要手工输入账号密码
+
+# 设置环境变量
+echo 'export PATH="/usr/local/go/bin:${PATH}"' >> /etc/profile
+echo 'export MASTER=120.79.50.239' >> /etc/profile
+echo 'export SLAVES=47.251.64.72:47.74.93.105:8.208.101.180' >> /etc/profile
+echo 'export WORKDIR=/root/matching-gossip' >> /etc/profile
+echo 'export GOPROXY=https://goproxy.io' >> /etc/profile
+source /etc/profile
+
+# 生成拓扑文件
+cd $WORKDIR
+rm -rf config
+rm -rf gossip/config
+rm -rf gossip/config
+mkdir config
+python3 topology.py
+cp -r config mgossip
+cp -r config gossip

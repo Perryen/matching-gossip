@@ -2,10 +2,11 @@
 """
 from flask import Flask, request, send_file
 import os
+import requests
+import re
 
 
 app = Flask(__name__)
-slaveAddr = os.environ.get("SLAVE")
 
 @app.route('/ping', methods=['GET'])
 def ping():
@@ -26,7 +27,16 @@ def mgossip_logs(logname):
 @app.route('/gossip/logs/<logname>', methods=['GET'])
 def gossip_logs(logname):
     return send_file(f"gossip/logs/{logname}")
+
+
+
+def get_self_ip() -> str:
+    response = requests.get('http://myip.ipip.net')
+    res = response.content.decode('utf-8')
+    m = re.match(r'.*当前 IP：([\d,.]+)  来自于.*')
+    if m:
+        return m.group(1)
     
     
 if __name__ == '__main__':
-    app.run(host=slaveAddr, port=30200)
+    app.run(host=get_self_ip(), port=30200)
