@@ -49,10 +49,21 @@ def main():
             print(f"mean convergence time: {mean_convergence_time}")
             print(f"drop max 10% and min 10% mean convergence time: {drop_mean_convergence_time}")
             print(f"min 25 % mean convergence time: {min25_mean_convergence_time}")
+            print(f"var and std of convergence time: {calculate_square_error(convergence_time, mean_convergence_time)}")
             print(f"mean send packet count: {mean_send_packet_count}")
             print(f"drop max 10% and min 10% mean send packet count: {drop_mean_send_packet_count}")
+            print(f"var and std of send packet count: {calculate_square_error(send_packet_counts, mean_send_packet_count)}")
             
 
+
+def calculate_square_error(data, mean):
+    error = 0
+    n = len(data)
+    for num in data:
+        error += (num - mean) * (num - mean)
+    square_error = round(error / n, 2)
+    return square_error, round(square_error ** 0.5, 2)
+        
 
 if __name__ == '__main__':
     main()

@@ -60,16 +60,17 @@ def calculate(logs_dir, gossip_interval, limit_time, result_file):
         else:
             count += 1
     infected_nodes_every_epoch.append(count)
+    convergence_rate_every_epoch = [round(node / node_count, 2) for node in infected_nodes_every_epoch]
     convergence_time = receive_times[-1] - begin_time
     try:
         with open(result_file, 'a') as f:
-            f.write(f"node convergence rate: {(len(receive_times) + 1) / node_count:.2f}\nconvergence time: {convergence_time} ns\ntotal packet the network send: {send_packet_count}\ninfected nodes every gossip epoch: {infected_nodes_every_epoch}\n")
+            f.write(f"node convergence rate: {(len(receive_times) + 1) / node_count:.2f}\nconvergence time: {convergence_time} ns\ntotal packet the network send: {send_packet_count}\ninfected nodes every gossip epoch: {infected_nodes_every_epoch}\nconvergence_rate_every_epoch: {convergence_rate_every_epoch}\n")
     except:
         print(f"node convergence rate: {(len(receive_times) + 1) / node_count:.2f}")
         print(f"convergence time: {convergence_time} ns")
         print(f"total packet the network send: {send_packet_count}")
         print(f"infected nodes every gossip epoch: {infected_nodes_every_epoch}")
-    
+        print(f"convergence_rate_every_epoch: {convergence_rate_every_epoch}")
     
 if __name__ == '__main__':
     calculate(args.logs_dir, args.gossip_interval, args.limit_time, args.result_file)  
