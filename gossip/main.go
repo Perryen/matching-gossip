@@ -288,7 +288,7 @@ func getHandler(w http.ResponseWriter, r *http.Request) {
 // memberlist启动函数
 func start() error {
 	hostname, _ := os.Hostname()
-	c := gossip.DefaultLocalConfig()
+	c := gossip.DefaultWANConfig()
 	c.Delegate = &delegate{}
 	c.BindPort = bindPort
 	c.BindAddr = bindAddr

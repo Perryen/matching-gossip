@@ -13,10 +13,6 @@ slaveAddrs = os.environ.get('SLAVES')
 
 def main():
     topologys = ['hybercube', 'bus', 'ring']
-    configFiles = [
-        'bus', 'ring', 'hybercube-2', 'hybercube-3', 'hybercube-4', 'hybercube-5',          
-        'hybercube-6', 'hybercube-7', 'hybercube-8', 'hybercube-9'
-    ]
     dims = list(range(2, 11))
     slave_addrs = slaveAddrs.split(":")
     num_slaves = len(slave_addrs)
@@ -37,10 +33,10 @@ def main():
                     requests.get(f'http://{slave_addr}:30600/execute?command={slave_command}')
                 time.sleep(50)
                 # 开始收集日志
-                for i, slave_addr in enumerate(slave_addrs):
-                    for j in range(node // num_slaves * (i + 1) + 1, node // num_slaves * (i + 2)):
-                        with open(f"{mode}/logs/Node{j}.log", "w") as f:
-                            res = requests.get(f'http://{slave_addr}:30600/{mode}/logs/Node{j}.log')
+                for j, slave_addr in enumerate(slave_addrs):
+                    for k in range(nodes_num * (j + 1) + 1, nodes_num * (j + 2) + 1):
+                        with open(f"{mode}/logs/Node{k}.log", "w") as f:
+                            res = requests.get(f'http://{slave_addr}:30600/{mode}/logs/Node{k}.log')
                             f.write(res.content.decode("utf-8"))
                 # 开始计算得到原始实验数据
                 calculate(f"{mode}/logs", 1e9, limit_time, f'{mode}.txt')

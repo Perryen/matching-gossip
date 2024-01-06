@@ -13,7 +13,7 @@ firstNode=$3
 endNode=$4
 isMaster=$5
 port1=$6  # 30000
-port2=$7  # 30500
+port2=$7  # 30200
 gossipNodes=$8
 limitTime=$9
 portNum=$4-$3+1
@@ -56,7 +56,7 @@ fi
 sleep 15    # 等待整个集群中的所有节点全部启动成功
 cd ..
 
-curl "http://"$MASTER":30500/add?key=mgossip&val=better"  # 给种子节点一个消息
+curl "http://"$MASTER":30200/add?key=mgossip&val=better"  # 给种子节点一个消息
 sleep 10   # 等待直到上述消息已经在集群中得到了充分的传播
 
 for ((i=$port1; i<$port1+$portNum; i++)); do

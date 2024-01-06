@@ -293,7 +293,7 @@ func getHandler(w http.ResponseWriter, r *http.Request) {
 
 func start() error {
 	hostname, _ := os.Hostname()
-	c := mgossip.DefaultLocalConfig()
+	c := mgossip.DefaultWANConfig()
 	c.Delegate = &delegate{}
 	c.BindPort = bindPort
 	c.BindAddr = bindAddr
