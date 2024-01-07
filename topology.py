@@ -30,7 +30,7 @@ class Node:
         self.neighbors.append(neighbor)
         
     def address(self) -> str:
-        return f"{self.bindAddr}:{self.bindPort}"
+        return f"{self.advertiseAddr}:{self.bindPort}"
     
     def str(self) -> str:
         return self.__str__()
