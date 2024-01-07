@@ -345,6 +345,7 @@ func (m *Memberlist) probeNode(node *nodeState) {
 		m.awareness.ApplyDelta(awarenessDelta)
 	}()
 	if node.State == StateAlive {
+		m.logger.Printf("send a ping msg to %s", node.Address())
 		if err := m.encodeAndSendMsg(node.FullAddress(), pingMsg, &ping); err != nil {
 			m.logger.Printf("[ERR] memberlist: Failed to send UDP ping: %s", err)
 			if failedRemote(err) {

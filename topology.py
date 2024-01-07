@@ -8,9 +8,10 @@ slaveAddrs = os.environ.get("SLAVES")
 
 
 class Node:
-    def __init__(self, nodeName, bindAddr, bindPort, memberlistAddr, memberlistPort, port, neighbors):
+    def __init__(self, nodeName, advertiseAddr, bindPort, memberlistAddr, memberlistPort, port, neighbors):
         self.nodeName = nodeName
-        self.bindAddr = bindAddr
+        self.bindAddr = '0.0.0.0'
+        self.advertiseAddr = advertiseAddr
         self.bindPort = bindPort
         self.memberlistAddr = memberlistAddr
         self.memberlistPort = memberlistPort
@@ -20,8 +21,7 @@ class Node:
     def __str__(self):
         # 输出配置文件的内容
         # 不允许绑定公网IP
-        self.bindAddr = '0.0.0.0'
-        return f'[{self.nodeName}]\nbindAddr={self.bindAddr}\nbindPort={self.bindPort}\nmemberlistAddr={self.memberlistAddr}\nmemberlistPort={self.memberlistPort}\nneighbors="{",".join(self.neighbors)}"\nport={self.port}\n\n'
+        return f'[{self.nodeName}]\nbindAddr={self.bindAddr}\nadvertiseAddr={self.advertiseAddr}\nbindPort={self.bindPort}\nmemberlistAddr={self.memberlistAddr}\nmemberlistPort={self.memberlistPort}\nneighbors="{",".join(self.neighbors)}"\nport={self.port}\n\n'
     
     def set_neighbors(self, neighbors):
         self.neighbors = neighbors

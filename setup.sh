@@ -17,8 +17,8 @@ git clone https://gitee.com/Perryen/matching-gossip.git
 
 # 设置环境变量
 echo 'export PATH="/usr/local/go/bin:${PATH}"' >> /etc/profile
-echo 'export MASTER=120.79.64.144' >> /etc/profile
-echo 'export SLAVES=47.251.64.72:47.74.84.3:8.208.101.180' >> /etc/profile
+echo 'export MASTER=120.78.10.33' >> /etc/profile
+echo 'export SLAVES=47.88.46.87:47.74.90.214:8.208.101.180' >> /etc/profile
 echo 'export WORKDIR=/root/matching-gossip' >> /etc/profile
 echo 'export GOPROXY=https://goproxy.io' >> /etc/profile
 source /etc/profile
@@ -32,3 +32,6 @@ mkdir config
 python3 topology.py
 cp -r config mgossip
 cp -r config gossip
+
+# tmux new-session -t mgossip
+# cd matching-gossip

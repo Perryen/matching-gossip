@@ -32,6 +32,7 @@ var (
   	nodeName      = flag.String("nodeName", "firstNode", "节点名称")
 	gossipNodes   = flag.Int("gossipNodes", 2, "谣言传播节点个数")
   	bindAddr string
+	advertiseAddr string
   	bindPort int
   	memberlistAddr string
   	memberlistPort int
@@ -47,6 +48,7 @@ func init() {
 		panic("配置文件不存在或者格式有误")
 	}
 	bindAddr = cfg.Section(*nodeName).Key("bindAddr").String()
+	advertiseAddr = cfg.Section(*nodeName).Key("advertiseAddr").String()
 	bindPort, err = cfg.Section(*nodeName).Key("bindPort").Int()
 	if err != nil {
 		fmt.Print(err.Error())
@@ -292,6 +294,7 @@ func start() error {
 	c.Delegate = &delegate{}
 	c.BindPort = bindPort
 	c.BindAddr = bindAddr
+	c.AdvertiseAddr = advertiseAddr
 	c.PushPullInterval = 0 // 禁用PushPull协程(即反熵传播过程)
 	c.GossipNodes = *gossipNodes // 可配置
 	c.Name = hostname + "-" + uuid.NewUUID().String()
