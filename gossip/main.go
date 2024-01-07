@@ -295,6 +295,7 @@ func start() error {
 	c.BindPort = bindPort
 	c.BindAddr = bindAddr
 	c.AdvertiseAddr = advertiseAddr
+	c.AdvertisePort = bindPort
 	c.PushPullInterval = 0 // 禁用PushPull协程(即反熵传播过程)
 	c.GossipNodes = *gossipNodes // 可配置
 	c.Name = hostname + "-" + uuid.NewUUID().String()

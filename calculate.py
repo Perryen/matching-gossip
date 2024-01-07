@@ -61,11 +61,16 @@ def calculate(logs_dir, gossip_interval, limit_time, result_file):
             count += 1
     infected_nodes_every_epoch.append(count)
     convergence_rate_every_epoch = [round(node / node_count, 2) for node in infected_nodes_every_epoch]
+    rate_sum = 0
+    for i, rate in enumerate(convergence_rate_every_epoch):
+        rate_sum += rate
+        convergence_rate_every_epoch[i] = rate_sum
     convergence_time = receive_times[-1] - begin_time
     try:
         with open(result_file, 'a') as f:
             f.write(f"node convergence rate: {(len(receive_times) + 1) / node_count:.2f}\nconvergence time: {convergence_time} ns\ntotal packet the network send: {send_packet_count}\ninfected nodes every gossip epoch: {infected_nodes_every_epoch}\nconvergence_rate_every_epoch: {convergence_rate_every_epoch}\n")
-    except:
+    except Exception as e:
+        print(e)
         print(f"node convergence rate: {(len(receive_times) + 1) / node_count:.2f}")
         print(f"convergence time: {convergence_time} ns")
         print(f"total packet the network send: {send_packet_count}")

@@ -33,5 +33,3 @@ python3 topology.py
 cp -r config mgossip
 cp -r config gossip
 
-# tmux new-session -t mgossip
-# cd matching-gossip

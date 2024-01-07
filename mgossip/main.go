@@ -300,6 +300,7 @@ func start() error {
 	c.BindPort = bindPort
 	c.BindAddr = bindAddr
 	c.AdvertiseAddr = advertiseAddr
+	c.AdvertisePort = bindPort
 	c.Neighbors = neighbors
 	c.PushPullInterval = 0 // 禁用PushPull协程(即反熵传播)
 	c.GossipNodes = *gossipNodes 
