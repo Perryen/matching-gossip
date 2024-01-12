@@ -1,4 +1,7 @@
-# root权限执行
+# 使用手册：
+#  1. 将该setup.sh拷贝到服务器上
+#  2. 执行bash setup.sh
+#  3. 输入gitee账号密码
 # 安装必要工具
 apt-get update
 apt-get upgrade
