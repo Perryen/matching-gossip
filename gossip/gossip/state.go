@@ -410,7 +410,7 @@ func (m *Memberlist) probeNode(node *nodeState) {
 		// probe interval it will give the TCP fallback more time, which
 		// is more active in dealing with lost packets, and it gives more
 		// time to wait for indirect acks/nacks.
-		m.logger.Printf("[DEBUG] memberlist: Failed UDP ping: %s (timeout reached)", node.Name)
+		m.logger.Printf("[DEBUG] memberlist: Failed UDP ping: %s (timeout reached)", node.Address())
 	}
 
 HANDLE_REMOTE_FAILURE:
@@ -625,14 +625,7 @@ func (m *Memberlist) gossip() {
 		}
 		
 		addr := node.Address()
-		// 模拟真实环境
-		// 由于实验条件受限，我们使用的两台服务器其实是一台主机上的两个docker容器，所以通信延迟在1ms内
-		// 而我们matching-gossip在这种极低通信延迟下的优势不明显
-		// 所以此处对于不同主机间的通信，在软件层面予以50ms延迟，而这也是比较真实的通信延迟
-		parts := strings.Split(addr, ":")
-		if m.config.BindAddr != parts[0] {
-			time.Sleep(50 * time.Millisecond)
-		}
+		
 		//fmt.Println(addr)
 		if len(msgs) == 1 {
 			if msgs[0][1] == 'd' {

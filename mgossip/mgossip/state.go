@@ -412,7 +412,7 @@ func (m *Memberlist) probeNode(node *nodeState) {
 		// is more active in dealing with lost packets, and it gives more
 		// time to wait for indirect acks/nacks.
 		// 超时记录
-		m.logger.Printf("[DEBUG] memberlist: Failed UDP ping: %s (timeout reached)", node.Name)
+		m.logger.Printf("[DEBUG] memberlist: Failed UDP ping: %s (timeout reached)", node.Address())
 	}
 
 HANDLE_REMOTE_FAILURE:
@@ -603,6 +603,7 @@ func (m *Memberlist) gossip() {
 			neighbors = append(neighbors, node)
 		}
 	}
+	m.logger.Println("[Test] gossip neighbors: ", neighbors)
 	kNodes := kRandomNodes(m.config.GossipNodes, neighbors, func(n *nodeState) bool {
 		if n.Name == m.config.Name {
 			return true
@@ -619,7 +620,7 @@ func (m *Memberlist) gossip() {
 		}
 	})
 	m.nodeLock.RUnlock()
-
+	m.logger.Println("[Test] selected nodes: ", kNodes)
 	// Compute the bytes available
 	bytesAvail := m.config.UDPBufferSize - compoundHeaderOverhead - labelOverhead(m.config.Label)
 	if m.config.EncryptionEnabled() {
@@ -633,10 +634,7 @@ func (m *Memberlist) gossip() {
 		}
 		
 		addr := node.Address()
-		parts := strings.Split(addr, ":")
-		if m.config.BindAddr != parts[0] {
-			time.Sleep(50 * time.Millisecond)
-		}
+
 		//fmt.Println(addr)
 		if len(msgs) == 1 {
 			if msgs[0][1] == 'd' {

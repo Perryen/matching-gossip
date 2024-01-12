@@ -20,8 +20,6 @@ import (
 	"github.com/bwmarrin/snowflake"
 	"github.com/go-ini/ini"
 	"github.com/zhuohuashiyi/gossip/gossip"
-
-	"github.com/pborman/uuid"
 )
 
 var (
@@ -289,7 +287,6 @@ func getHandler(w http.ResponseWriter, r *http.Request) {
 
 // memberlist启动函数
 func start() error {
-	hostname, _ := os.Hostname()
 	c := gossip.DefaultWANConfig()
 	c.Delegate = &delegate{}
 	c.BindPort = bindPort
@@ -298,7 +295,7 @@ func start() error {
 	c.AdvertisePort = bindPort
 	c.PushPullInterval = 0 // 禁用PushPull协程(即反熵传播过程)
 	c.GossipNodes = *gossipNodes // 可配置
-	c.Name = hostname + "-" + uuid.NewUUID().String()
+	c.Name = fmt.Sprintf("%s:%d", advertiseAddr, bindPort)
 	// 创建 Gossip 网络
 	m, err := gossip.Create(c)
 	if err != nil {

@@ -21,7 +21,6 @@ import (
 	"github.com/go-ini/ini"
 	"github.com/zhuohuashiyi/mgossip/mgossip"
 
-	"github.com/pborman/uuid"
 )
 
 var (
@@ -294,7 +293,6 @@ func getHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func start() error {
-	hostname, _ := os.Hostname()
 	c := mgossip.DefaultWANConfig()
 	c.Delegate = &delegate{}
 	c.BindPort = bindPort
@@ -304,7 +302,7 @@ func start() error {
 	c.Neighbors = neighbors
 	c.PushPullInterval = 0 // 禁用PushPull协程(即反熵传播)
 	c.GossipNodes = *gossipNodes 
-	c.Name = hostname + "-" + uuid.NewUUID().String()
+	c.Name = fmt.Sprintf("%s:%d", advertiseAddr, bindPort)
 	// 创建 Gossip 网络
 	m, err := mgossip.Create(c)
 	if err != nil {
