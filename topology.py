@@ -69,7 +69,10 @@ def construct_hybercube_cluster(addrs, dim: int, no: int, port1: int, port2: int
 def construct_hybercube(addrs, dim: int):
     node_nums = 2 ** dim
     if len(addrs) >= node_nums:
-        return construct_hybercube_cluster(addrs[: node_nums], dim, 1, 30000, 30200)
+        nodes = []
+        for i in range(4):
+            nodes.extend(addrs[4 * i: 4 * i + (len(addrs) // node_nums)])
+        return construct_hybercube_cluster(nodes, dim, 1, 30000, 30200)
     else:
         return construct_hybercube_cluster(addrs, dim, 1, 30000, 30200)     
     
@@ -93,7 +96,10 @@ def construct_bus_cluster(addrs, dim: int, no: int, port1: int, port2: int):
 def construct_bus(addrs, dim: int):
     node_nums = 2 ** dim
     if len(addrs) >= node_nums:
-        nodes = construct_bus_cluster(addrs[: node_nums], dim, 1, 30000, 30200)
+        nodes = []
+        for i in range(4):
+            nodes.extend(addrs[4 * i: 4 * i + (len(addrs) // node_nums)])
+        nodes = construct_bus_cluster(nodes, dim, 1, 30000, 30200)
     else:
         nodes = construct_bus_cluster(addrs, dim, 1, 30000, 30200)
     return nodes
@@ -103,7 +109,10 @@ def construct_bus(addrs, dim: int):
 def construct_ring(addrs, dim: int):
     node_nums = 2 ** dim
     if len(addrs) >= node_nums:
-        nodes = construct_bus_cluster(addrs[: node_nums], dim, 1, 30000, 30200)
+        nodes = []
+        for i in range(4):
+            nodes.extend(addrs[4 * i: 4 * i + (len(addrs) // node_nums)])
+        nodes = construct_bus_cluster(nodes, dim, 1, 30000, 30200)
     else:
         nodes = construct_bus_cluster(addrs, dim, 1, 30000, 30200)
     nodes[0].add_neighbor(nodes[-1].address())
