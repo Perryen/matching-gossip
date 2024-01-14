@@ -632,7 +632,7 @@ func (m *Memberlist) gossip() {
 		if len(msgs) == 0 {
 			return
 		}
-		
+		m.logger.Println("[Test] send msgs to node", node.Address())
 		addr := node.Address()
 
 		//fmt.Println(addr)

@@ -1,7 +1,9 @@
 # 使用手册：
-#  1. 将该setup.sh拷贝到服务器上
-#  2. 执行bash setup.sh
-#  3. 输入gitee账号密码
+#  1. 修改setup.sh:替换MASTER为第一个IP地址，SLAVES为剩下15个IP地址，用：分开
+#  2. 将该setup.sh拷贝到服务器上
+#  3. 执行bash setup.sh
+#  4. 输入gitee账号密码
+#  5. tmux new-session -t mgossip
 # 安装必要工具
 apt-get update
 apt-get upgrade
