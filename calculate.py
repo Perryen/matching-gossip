@@ -60,11 +60,11 @@ def calculate(logs_dir, gossip_interval, limit_time, result_file):
         else:
             count += 1
     infected_nodes_every_epoch.append(count)
-    convergence_rate_every_epoch = [round(node / node_count, 2) for node in infected_nodes_every_epoch]
-    rate_sum = 0
-    for i, rate in enumerate(convergence_rate_every_epoch):
-        rate_sum += rate
-        convergence_rate_every_epoch[i] = rate_sum
+    convergence_rate_every_epoch = [0] * len(infected_nodes_every_epoch) 
+    nodes_sum = 0
+    for i, count in enumerate(infected_nodes_every_epoch):
+        nodes_sum += count
+        convergence_rate_every_epoch[i] = round(nodes_sum / sum(infected_nodes_every_epoch), 2)
     convergence_time = receive_times[-1] - begin_time
     try:
         with open(result_file, 'a') as f:

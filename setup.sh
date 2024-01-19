@@ -17,13 +17,13 @@ apt-get install -y tmux
 
 # 拉去代码
 cd /root
-git clone https://gitee.com/Perryen/matching-gossip.git
-
+#git clone https://gitee.com/Perryen/matching-gossip.git
+git clone https://github.com/Perryen/matching-gossip
 
 # 设置环境变量
 echo 'export PATH="/usr/local/go/bin:${PATH}"' >> /etc/profile
-echo 'export MASTER=47.106.233.248' >> /etc/profile
-echo 'export SLAVES=120.79.67.101:120.79.32.161:47.106.228.23:47.254.15.35:47.251.57.68:47.251.78.77:47.251.73.191:8.208.83.221:8.208.102.21:8.208.96.27:8.208.47.241:47.74.89.10:47.74.92.146:47.74.88.198:47.74.89.16' >> /etc/profile
+echo 'export MASTER=112.74.97.164' >> /etc/profile
+echo 'export SLAVES=47.106.233.248:47.251.71.56:47.251.78.77:8.208.83.221:8.208.96.27:47.74.84.187:47.74.89.74' >> /etc/profile
 echo 'export WORKDIR=/root/matching-gossip' >> /etc/profile
 echo 'export GOPROXY=https://goproxy.io' >> /etc/profile
 source /etc/profile
