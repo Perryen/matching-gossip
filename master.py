@@ -6,6 +6,7 @@ import os
 import threading
 
 from calculate import calculate 
+from clean_data import clean_data
 
 
 slaveAddrs = os.environ.get('SLAVES')
@@ -49,6 +50,7 @@ def main():
                                 f.write(res.content.decode("utf-8"))
                     # 开始计算得到原始实验数据
                     calculate(f"{mode}/logs", 5e8, limit_time, os.path.join('data', f'{mode}-{topology}-{dim}.txt'))
+    clean_data('data')
         
         
 if __name__ == '__main__':

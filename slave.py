@@ -2,6 +2,7 @@
 """
 from flask import Flask, request, send_file
 import os
+import threading
 
 
 app = Flask(__name__)
@@ -16,7 +17,8 @@ def ping():
 def execute():
     command = request.args.get('command', type=str)
     print(command)
-    os.system(command)  # 执行主服务器传送过来的运行run.sh脚本的相关命令
+    # 执行主服务器传送过来的运行run.sh脚本的相关命令
+    threading.Thread(target=lambda c: os.system(c), args=(command,)).start() 
     return 'I have execute the command'
 
 # 以下两个为获取日志端口

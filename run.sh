@@ -54,6 +54,7 @@ if [[ $isMaster -eq 0 ]]; then
     for ((i=$port1; i<$port1+$portNum; i++)); do
         kill -9 $(netstat -antp | grep :$i | awk '{print $7}' | awk -F'/' '{ print $1 }')
     done
+    exit
 fi
 
 sleep 60    # 等待整个集群中的所有节点全部启动成功
