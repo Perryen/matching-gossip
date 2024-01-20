@@ -40,11 +40,11 @@ def main():
                     for j, slave_addr in enumerate(nodes):
                         slave_command = f"bash run.sh {mode} config/{configFile}.ini {nodes_num * (j + 1) + 1} {nodes_num * (j + 2)} 0 30000 30500 2 {limit_time}"
                         requests.get(f'http://{slave_addr}:30600/execute?command={slave_command}')
-                    time.sleep(50)
+                    time.sleep(95)
                     # 开始收集日志
                     for j, slave_addr in enumerate(nodes):
                         for k in range(nodes_num * (j + 1) + 1, nodes_num * (j + 2) + 1):
-                            with open(f"{mode}/logs/Node{k}.log", "w") as f:
+                            with open(f"{mode}/logs/Node{k}.log", "a") as f:
                                 res = requests.get(f'http://{slave_addr}:30600/{mode}/logs/Node{k}.log')
                                 f.write(res.content.decode("utf-8"))
                     # 开始计算得到原始实验数据

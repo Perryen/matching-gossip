@@ -50,10 +50,13 @@ done
 
 # 剩下的工作与从服务器无关
 if [[ $isMaster -eq 0 ]]; then
-    exit
+    sleep 75
+    for ((i=$port1; i<$port1+$portNum; i++)); do
+        kill -9 $(netstat -antp | grep :$i | awk '{print $7}' | awk -F'/' '{ print $1 }')
+    done
 fi
 
-sleep 15    # 等待整个集群中的所有节点全部启动成功
+sleep 60    # 等待整个集群中的所有节点全部启动成功
 cd ..
 
 curl "http://"$MASTER":30200/add?key=mgossip&val=better"  # 给种子节点一个消息
