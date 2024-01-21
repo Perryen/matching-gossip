@@ -22,8 +22,8 @@ git clone https://github.com/Perryen/matching-gossip
 
 # 设置环境变量
 echo 'export PATH="/usr/local/go/bin:${PATH}"' >> /etc/profile
-echo 'export MASTER=47.106.241.133' >> /etc/profile
-echo 'export SLAVES=120.77.215.48:0:0:47.251.81.241:47.251.82.131:0:0:8.208.46.211:8.208.22.218:0:0:47.74.86.151:47.74.86.220:0:0' >> /etc/profile
+echo 'export MASTER=120.79.44.63' >> /etc/profile
+echo 'export SLAVES=119.23.68.119:39.108.157.85:120.78.81.108:47.88.6.51:47.251.81.241:47.251.75.208:47.251.82.131:8.208.16.216:8.208.96.128:8.208.22.218:8.208.46.211:47.74.90.1:47.74.86.250:47.74.87.188:47.74.84.106' >> /etc/profile
 echo 'export WORKDIR=/root/matching-gossip' >> /etc/profile
 echo 'export GOPROXY=https://goproxy.io' >> /etc/profile
 source /etc/profile
