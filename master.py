@@ -34,14 +34,15 @@ def main():
                 nodes.extend(addrs[4 * i: 4 * i + node // 4])
             nodes.pop(0)
             for mode in ['mgossip', 'gossip']:
-                master_command = f"bash run.sh {mode} config/{configFile}.ini 1 {nodes_num} 1 30000 30500 2 {limit_time}"
+                master_command = f"bash run.sh {mode} config/{configFile}.ini 1 {nodes_num} 1 2 {limit_time} 10 60 10"
                 for i in range(20):
                     # 这里另开一个线程的原因是为了快速同步从服务器，使从服务器几乎同步运行对应的命令
                     threading.Thread(target=lambda c: os.system(c), args=(master_command,)).start()
                     for j, slave_addr in enumerate(nodes):
-                        slave_command = f"bash run.sh {mode} config/{configFile}.ini {nodes_num * (j + 1) + 1} {nodes_num * (j + 2)} 0 30000 30500 2 {limit_time}"
+                        slave_command = f"bash run.sh {mode} config/{configFile}.ini {nodes_num * (j + 1) + 1} {nodes_num * (j + 2)} 0 2 {limit_time} 10 60 10"
                         requests.get(f'http://{slave_addr}:30600/execute?command={slave_command}')
-                    time.sleep(95)
+                    sleep_time = 60 + 10 + 25
+                    time.sleep(sleep_time)
                     # 开始收集日志
                     for j, slave_addr in enumerate(nodes):
                         for k in range(nodes_num * (j + 1) + 1, nodes_num * (j + 2) + 1):

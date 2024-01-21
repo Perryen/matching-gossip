@@ -12,12 +12,15 @@ confFile=$2  # 配置文件地址
 firstNode=$3  
 endNode=$4
 isMaster=$5
-port1=$6  # 30000
-port2=$7  # 30200
-gossipNodes=$8
-limitTime=$9
+gossipNodes=$6
+limitTime=$7
+retransmitMult=$8
+clusterInitTime=$9
+packetDiffuseTime=${10}
 portNum=$4-$3+1
 node='Node'
+port1=30000
+port2=30200
 
 # 根据是运行经典Gossip还是改进Gossip实验进入不同的目录
 if [[ $mgossip -eq 1 ]]; then
@@ -32,7 +35,10 @@ mkdir logs
 # 以下是将可能占用本实验需要的端口的所有进程杀死，我们默认使用的是30000到30100的端口，
 # 如果某些占用这些端口的进程很重要，请修改命令行参数和配置脚本
 for ((i=$port1; i<$port1+$portNum; i++)); do
-    kill -9 $(netstat -antp | grep :$i | awk '{print $7}' | awk -F'/' '{ print $1 }')
+    pid=$(netstat -antp | grep :$i | awk '{print $7}' | awk -F'/' '{ print $1 }' 2>/dev/null)
+        if [[ -n "$pid" ]]; then
+            kill -9 "$pid"
+        fi
 done
 
 # 从服务器需要等待一段时间直到主服务器上的种子节点启动成功
@@ -42,7 +48,7 @@ fi
 
 for ((i=firstNode; i<=endNode; i++)); do
     # 使用nohup在后台运行main.go程序，即运行一个网络节点
-    nohup go run main.go -nodeName ${node}${i} -conf $confFile -gossipNodes $gossipNodes > /dev/null 2>&1 &
+    nohup go run main.go -nodeName ${node}${i} -conf $confFile -gossipNodes $gossipNodes -retransmitMult $retransmitMult  > /dev/null 2>&1 &
     # 种子节点默认是主服务器上的第一个节点
     if [[ $isMaster -eq 1 && i -eq firstNode ]]; then  
         sleep 3
@@ -51,19 +57,25 @@ done
 
 # 剩下的工作与从服务器无关
 if [[ $isMaster -eq 0 ]]; then
-    sleep 75
+    sleep $clusterInitTime+$packetDiffuseTime+5
     for ((i=$port1; i<$port1+$portNum; i++)); do
-        kill -9 $(netstat -antp | grep :$i | awk '{print $7}' | awk -F'/' '{ print $1 }')
+        pid=$(netstat -antp | grep :$i | awk '{print $7}' | awk -F'/' '{ print $1 }' 2>/dev/null)
+        if [[ -n "$pid" ]]; then
+            kill -9 "$pid"
+        fi
     done
     exit
 fi
 
-sleep 60    # 等待整个集群中的所有节点全部启动成功
+sleep $clusterInitTime    # 等待整个集群中的所有节点全部启动成功
 cd ..
 
-curl "http://"$MASTER":30200/add?key=mgossip&val=better"  # 给种子节点一个消息
-sleep 10   # 等待直到上述消息已经在集群中得到了充分的传播
+curl "http://"$MASTER":"$port2"/add?key=mgossip&val=better"  # 给种子节点一个消息
+sleep $packetDiffuseTime   # 等待直到上述消息已经在集群中得到了充分的传播
 
 for ((i=$port1; i<$port1+$portNum; i++)); do
-    kill -9 $(netstat -antp | grep :$i | awk '{print $7}' | awk -F'/' '{ print $1 }')
+    pid=$(netstat -antp | grep :$i | awk '{print $7}' | awk -F'/' '{ print $1 }' 2>/dev/null)
+    if [[ -n "$pid" ]]; then
+        kill -9 "$pid"
+    fi
 done

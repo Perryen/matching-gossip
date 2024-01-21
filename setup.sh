@@ -38,3 +38,10 @@ python3 topology.py
 cp -r config mgossip
 cp -r config gossip
 
+# 下载go第三方包
+cd mgossip
+go install
+cd -
+cd gossip
+go install
+

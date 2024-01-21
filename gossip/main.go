@@ -29,6 +29,7 @@ var (
   	configFile    = flag.String("conf", "config.ini", "配置文件地址")
   	nodeName      = flag.String("nodeName", "firstNode", "节点名称")
 	gossipNodes   = flag.Int("gossipNodes", 2, "谣言传播节点个数")
+	retransmitMult = flag.Int("retransmitMult", 4, "memberlist重传次数因子")
   	bindAddr string
 	advertiseAddr string
   	bindPort int
@@ -295,6 +296,7 @@ func start() error {
 	c.AdvertisePort = bindPort
 	c.PushPullInterval = 0 // 禁用PushPull协程(即反熵传播过程)
 	c.GossipNodes = *gossipNodes // 可配置
+	c.RetransmitMult = *retransmitMult
 	c.Name = fmt.Sprintf("%s:%d", advertiseAddr, bindPort)
 	// 创建 Gossip 网络
 	m, err := gossip.Create(c)

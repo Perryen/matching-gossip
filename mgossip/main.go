@@ -30,6 +30,7 @@ var (
 	configFile    = flag.String("conf", "config.ini", "配置文件地址")
 	nodeName      = flag.String("nodeName", "firstNode", "节点名称")
 	gossipNodes   = flag.Int("gossipNodes", 2, "谣言传播节点个数")
+	retransmitMult = flag.Int("retransmitMult", 4, "memberlist重传次数因子")
 	messages = map[int64]int64{}
 	bindAddr string
 	advertiseAddr string
@@ -302,6 +303,7 @@ func start() error {
 	c.Neighbors = neighbors
 	c.PushPullInterval = 0 // 禁用PushPull协程(即反熵传播)
 	c.GossipNodes = *gossipNodes 
+	c.RetransmitMult = *retransmitMult
 	c.Name = fmt.Sprintf("%s:%d", advertiseAddr, bindPort)
 	// 创建 Gossip 网络
 	m, err := mgossip.Create(c)
