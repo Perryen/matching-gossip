@@ -35,10 +35,7 @@ mkdir logs
 # 以下是将可能占用本实验需要的端口的所有进程杀死，我们默认使用的是30000到30100的端口，
 # 如果某些占用这些端口的进程很重要，请修改命令行参数和配置脚本
 for ((i=$port1; i<$port1+$portNum; i++)); do
-    pid=$(netstat -antp | grep :$i | awk '{print $7}' | awk -F'/' '{ print $1 }' 2>/dev/null)
-        if [[ -n "$pid" ]]; then
-            kill -9 "$pid"
-        fi
+    kill -9 $(netstat -antp | grep :$i | awk '{print $7}' | awk -F'/' '{ print $1 }')
 done
 
 # 从服务器需要等待一段时间直到主服务器上的种子节点启动成功
@@ -57,12 +54,10 @@ done
 
 # 剩下的工作与从服务器无关
 if [[ $isMaster -eq 0 ]]; then
-    sleep $clusterInitTime+$packetDiffuseTime+5
+    waitTime=`expr $clusterInitTime + $packetDiffuseTime + 5`
+    sleep $waitTime
     for ((i=$port1; i<$port1+$portNum; i++)); do
-        pid=$(netstat -antp | grep :$i | awk '{print $7}' | awk -F'/' '{ print $1 }' 2>/dev/null)
-        if [[ -n "$pid" ]]; then
-            kill -9 "$pid"
-        fi
+        kill -9 $(netstat -antp | grep :$i | awk '{print $7}' | awk -F'/' '{ print $1 }')
     done
     exit
 fi
@@ -74,8 +69,5 @@ curl "http://"$MASTER":"$port2"/add?key=mgossip&val=better"  # 给种子节点�
 sleep $packetDiffuseTime   # 等待直到上述消息已经在集群中得到了充分的传播
 
 for ((i=$port1; i<$port1+$portNum; i++)); do
-    pid=$(netstat -antp | grep :$i | awk '{print $7}' | awk -F'/' '{ print $1 }' 2>/dev/null)
-    if [[ -n "$pid" ]]; then
-        kill -9 "$pid"
-    fi
+    kill -9 $(netstat -antp | grep :$i | awk '{print $7}' | awk -F'/' '{ print $1 }')
 done
