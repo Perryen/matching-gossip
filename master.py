@@ -31,26 +31,34 @@ def main():
             nodes_num = max(1, nodes_num)
             nodes = []
             for i in range(4):
-                nodes.extend(addrs[4 * i: 4 * i + node // 4])
+                nodes.extend(addrs[4 * i: 4 * i + min(node // 4, 4)])
             nodes.pop(0)
             for mode in ['mgossip', 'gossip']:
                 master_command = f"bash run.sh {mode} config/{configFile}.ini 1 {nodes_num} 1 2 {limit_time} 10 60 10"
-                for i in range(20):
+                i = 0
+                while i < 20:
                     # 这里另开一个线程的原因是为了快速同步从服务器，使从服务器几乎同步运行对应的命令
-                    threading.Thread(target=lambda c: os.system(c), args=(master_command,)).start()
-                    for j, slave_addr in enumerate(nodes):
-                        slave_command = f"bash run.sh {mode} config/{configFile}.ini {nodes_num * (j + 1) + 1} {nodes_num * (j + 2)} 0 2 {limit_time} 10 60 10"
-                        requests.get(f'http://{slave_addr}:30600/execute?command={slave_command}')
-                    sleep_time = 60 + 10 + 25
-                    time.sleep(sleep_time)
-                    # 开始收集日志
-                    for j, slave_addr in enumerate(nodes):
-                        for k in range(nodes_num * (j + 1) + 1, nodes_num * (j + 2) + 1):
-                            with open(f"{mode}/logs/Node{k}.log", "a") as f:
-                                res = requests.get(f'http://{slave_addr}:30600/{mode}/logs/Node{k}.log')
-                                f.write(res.content.decode("utf-8"))
-                    # 开始计算得到原始实验数据
-                    calculate(f"{mode}/logs", 5e8, limit_time, os.path.join('data', f'{mode}-{topology}-{dim}.txt'))
+                    try:
+                        threading.Thread(target=lambda c: os.system(c), args=(master_command,)).start()
+                        for j, slave_addr in enumerate(nodes):
+                            slave_command = f"bash run.sh {mode} config/{configFile}.ini {nodes_num * (j + 1) + 1} {nodes_num * (j + 2)} 0 2 {limit_time} 10 60 10"
+                            requests.get(f'http://{slave_addr}:30600/execute?command={slave_command}')
+                        
+                        sleep_time = 60 + 10 + 25
+                        time.sleep(sleep_time)
+                        # 开始收集日志
+                        for j, slave_addr in enumerate(nodes):
+                            for k in range(nodes_num * (j + 1) + 1, nodes_num * (j + 2) + 1):
+                                with open(f"{mode}/logs/Node{k}.log", "a") as f:
+                                    res = requests.get(f'http://{slave_addr}:30600/{mode}/logs/Node{k}.log')
+                                    f.write(res.content.decode("utf-8"))
+                        # 开始计算得到原始实验数据
+                        calculate(f"{mode}/logs", 5e8, limit_time, os.path.join('data', f'{mode}-{topology}-{dim}.txt'))
+                        i += 1
+                    except Exception as e:
+                        with open("error.log", "a") as f:
+                            f.write(e)
+                        time.sleep(60)        
     clean_data('data')
         
         

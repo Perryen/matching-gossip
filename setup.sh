@@ -45,3 +45,5 @@ cd -
 cd gossip
 go install
 
+
+# git config --global user.email "2470145197@qq.com" && git config --global user.name "123" && git stash && git pull origin master && python3 slave.py
