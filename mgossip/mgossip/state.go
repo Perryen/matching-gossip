@@ -632,12 +632,14 @@ func (m *Memberlist) gossip() {
 		if len(msgs) == 0 {
 			return
 		}
-		m.logger.Println("[Test] send msgs to node", node.Address())
+		
 		addr := node.Address()
 
 		//fmt.Println(addr)
 		if len(msgs) == 1 {
 			if msgs[0][1] == 'd' {
+				m.logger.Println("[Test] send msgs to node", node.Address())
+				//m.logger.Println("[Test] send msgs: ", string(msgs[0]))
 				log.Printf("I send a packet to %s, now time %d", addr, time.Now().UnixNano())
 			}
 			// Send single message as is
@@ -646,6 +648,7 @@ func (m *Memberlist) gossip() {
 			}
 		} else {
 			for _, msg := range msgs {
+				m.logger.Println("[Test] send msgs to node", node.Address())
 				if msg[1] == 'd' {
 					log.Printf("I send a packet to %s, now time %d", addr, time.Now().UnixNano())
 				}

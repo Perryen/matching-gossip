@@ -45,7 +45,9 @@ fi
 
 for ((i=firstNode; i<=endNode; i++)); do
     # 使用nohup在后台运行main.go程序，即运行一个网络节点
-    nohup go run main.go -nodeName ${node}${i} -conf $confFile -gossipNodes $gossipNodes -retransmitMult $retransmitMult  > /dev/null 2>&1 &
+    rm "$i.txt"
+    touch "$i.txt"
+    nohup go run main.go -nodeName ${node}${i} -conf $confFile -gossipNodes $gossipNodes -retransmitMult $retransmitMult  > "$i.txt" 2>&1 &
     # 种子节点默认是主服务器上的第一个节点
     if [[ $isMaster -eq 1 && i -eq firstNode ]]; then  
         sleep 3
@@ -71,3 +73,5 @@ sleep $packetDiffuseTime   # 等待直到上述消息已经在集群中得到了
 for ((i=$port1; i<$port1+$portNum; i++)); do
     kill -9 $(netstat -antp | grep :$i | awk '{print $7}' | awk -F'/' '{ print $1 }')
 done
+
+10:53:54  47.74.89
