@@ -4,6 +4,7 @@ import requests
 import time
 import os
 import threading
+import traceback
 
 from calculate import calculate 
 from clean_data import clean_data
@@ -55,9 +56,9 @@ def main():
                         # 开始计算得到原始实验数据
                         calculate(f"{mode}/logs", 5e8, limit_time, os.path.join('data', f'{mode}-{topology}-{dim}.txt'))
                         i += 1
-                    except Exception as e:
+                    except:
                         with open("error.log", "a") as f:
-                            f.write(e)
+                            f.write(traceback.format_exc())
                         time.sleep(60)        
     clean_data('data')
         

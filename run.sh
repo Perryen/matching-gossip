@@ -73,5 +73,3 @@ sleep $packetDiffuseTime   # 等待直到上述消息已经在集群中得到了
 for ((i=$port1; i<$port1+$portNum; i++)); do
     kill -9 $(netstat -antp | grep :$i | awk '{print $7}' | awk -F'/' '{ print $1 }')
 done
-
-10:53:54  47.74.89

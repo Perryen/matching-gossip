@@ -89,6 +89,7 @@ func (m *Memberlist) getBroadcasts(overhead, limit int) [][]byte {
 
 		// Check space remaining for user messages
 		avail := limit - bytesUsed
+		m.logger.Println("now availble bytes to send user msg: ", avail)
 		if avail > overhead+userMsgOverhead {
 			userMsgs := d.GetBroadcasts(overhead+userMsgOverhead, avail)
 

@@ -648,8 +648,8 @@ func (m *Memberlist) gossip() {
 			}
 		} else {
 			for _, msg := range msgs {
-				m.logger.Println("[Test] send msgs to node", node.Address())
 				if msg[1] == 'd' {
+					m.logger.Println("[Test] send msgs to node", node.Address())
 					log.Printf("I send a packet to %s, now time %d", addr, time.Now().UnixNano())
 				}
 			}
