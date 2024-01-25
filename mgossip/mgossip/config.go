@@ -68,7 +68,7 @@ type Config struct {
 	// that are attempted for messages broadcasted over gossip. The actual
 	// count of retransmissions is calculated using the formula:
 	//
-	//   Retransmits = RetransmitMult * log(N+1)
+	//   Retransmits = RetransmitMult * log10(N+1)
 	//
 	// This allows the retransmits to scale properly with cluster size. The
 	// higher the multiplier, the more likely a failed broadcast is to converge

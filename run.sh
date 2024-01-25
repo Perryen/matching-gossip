@@ -17,6 +17,7 @@ limitTime=$7
 retransmitMult=$8
 clusterInitTime=$9
 packetDiffuseTime=${10}
+slaveSleepTime=${11}
 portNum=$4-$3+1
 node='Node'
 port1=30000
@@ -56,7 +57,7 @@ done
 
 # 剩下的工作与从服务器无关
 if [[ $isMaster -eq 0 ]]; then
-    waitTime=`expr $clusterInitTime + $packetDiffuseTime + 5`
+    waitTime=`expr $clusterInitTime + $packetDiffuseTime + $slaveSleepTime`
     sleep $waitTime
     for ((i=$port1; i<$port1+$portNum; i++)); do
         kill -9 $(netstat -antp | grep :$i | awk '{print $7}' | awk -F'/' '{ print $1 }')

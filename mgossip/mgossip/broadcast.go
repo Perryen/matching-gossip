@@ -77,7 +77,9 @@ func (m *Memberlist) queueBroadcast(node string, msg []byte, notify chan struct{
 func (m *Memberlist) getBroadcasts(overhead, limit int) [][]byte {
 	// Get memberlist messages first
 	toSend := m.broadcasts.GetBroadcasts(overhead, limit)
-
+	for _, msg := range toSend {
+		m.logger.Println(string(msg))
+	}
 	// Check if the user has anything to broadcast
 	d := m.config.Delegate
 	if d != nil {
@@ -89,8 +91,8 @@ func (m *Memberlist) getBroadcasts(overhead, limit int) [][]byte {
 
 		// Check space remaining for user messages
 		avail := limit - bytesUsed
-		m.logger.Println("now availble bytes to send user msg: ", avail)
 		if avail > overhead+userMsgOverhead {
+			m.logger.Println("now availble bytes to send user msg: ", avail)
 			userMsgs := d.GetBroadcasts(overhead+userMsgOverhead, avail)
 
 			// Frame each user message
