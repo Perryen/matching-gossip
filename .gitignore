@@ -5,3 +5,5 @@ mininet
 .vscode
 develop.md
 data
+plan.md
+work.py
