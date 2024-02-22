@@ -1,4 +1,4 @@
-package MGossip
+package mgossip
 
 // AliveDelegate is used to involve a client in processing
 // a node "alive" message. When a node joins, either through

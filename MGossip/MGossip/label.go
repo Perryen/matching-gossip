@@ -1,4 +1,4 @@
-package MGossip
+package mgossip
 
 import (
 	"bufio"

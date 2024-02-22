@@ -19,7 +19,7 @@ import (
 
 	"github.com/bwmarrin/snowflake"
 	"github.com/go-ini/ini"
-	"github.com/zhuohuashiyi/MGossip/MGossip"
+	"github.com/zhuohuashiyi/mgossip/mgossip"
 
 	"github.com/pborman/uuid"
 )
@@ -27,7 +27,7 @@ import (
 var (
 	mtx        sync.RWMutex //  读写锁
 	items      = map[string]string{}
-	broadcasts *MGossip.TransmitLimitedQueue
+	broadcasts *mgossip.TransmitLimitedQueue
 	configFile    = flag.String("conf", "config.ini", "配置文件地址")
 	nodeName      = flag.String("nodeName", "firstNode", "节点名称")
 	gossipNodes   = flag.Int("gossipNodes", 2, "谣言传播节点个数")
@@ -202,7 +202,7 @@ type broadcast struct {
 	notify chan<- struct{}
 }
 
-func (b *broadcast) Invalidates(other MGossip.Broadcast) bool {
+func (b *broadcast) Invalidates(other mgossip.Broadcast) bool {
   	return false
 }
 
@@ -293,7 +293,7 @@ func getHandler(w http.ResponseWriter, r *http.Request) {
 
 func start() error {
 	hostname, _ := os.Hostname()
-	c := MGossip.DefaultLocalConfig()
+	c := mgossip.DefaultLocalConfig()
 	c.Delegate = &delegate{}
 	c.BindPort = bindPort
 	c.BindAddr = bindAddr
@@ -302,7 +302,7 @@ func start() error {
 	c.GossipNodes = *gossipNodes 
 	c.Name = hostname + "-" + uuid.NewUUID().String()
 	// 创建 Gossip 网络
-	m, err := MGossip.Create(c)
+	m, err := mgossip.Create(c)
 	if err != nil {
 		return err
 	}
@@ -313,7 +313,7 @@ func start() error {
 			return err
 		}
 	}
-	broadcasts = &MGossip.TransmitLimitedQueue{
+	broadcasts = &mgossip.TransmitLimitedQueue{
 		NumNodes: func() int {
 			return m.NumMembers()
 		},

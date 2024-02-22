@@ -1,4 +1,4 @@
-package Gossip
+package gossip
 
 // AliveDelegate is used to involve a client in processing
 // a node "alive" message. When a node joins, either through

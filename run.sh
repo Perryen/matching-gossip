@@ -21,7 +21,7 @@ node='Node'
 
 # 根据是运行经典Gossip还是改进Gossip实验进入不同的目录
 if [[ $mgossip -eq 1 ]]; then
-    cd $WORKDIR/MGossip
+    cd $WORKDIR/mgossip
 else
     cd $WORKDIR/gossip
 fi
@@ -68,7 +68,7 @@ done
 # 这里是将从服务器上的日志文件拷贝到主服务器上
 if [[ $mgossip -eq 1 ]]; then
     expect -c "
-        spawn scp -r "$USER"@"$SLAVE":"$WORKDIR"/MGossip/logs MGossip
+        spawn scp -r "$USER"@"$SLAVE":"$WORKDIR"/mgossip/logs mgossip
         expect {
             \"$USER@"$SLAVE"'s password:\" {send \"$PASSWD\r\";exp_continue} 
         } "

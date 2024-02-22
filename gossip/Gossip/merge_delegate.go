@@ -1,4 +1,4 @@
-package Gossip
+package gossip
 
 // MergeDelegate is used to involve a client in
 // a potential cluster merge operation. Namely, when
