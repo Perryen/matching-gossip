@@ -134,6 +134,101 @@ def create_topology(topology: str, dim: int, addrs):
         for node in nodes:
             f.write(node.str())
             
+
+# addrs,nos,port1s,port2s 为同等长度的数组
+def construct_hybercube_new(addrs, nos, port1s, port2s, dim):
+    nodes_num = 2 ** dim
+    nodes = []
+    avail_nodes = len(addrs)
+    virtual_nodes = nodes_num // avail_nodes
+    for i in range(avail_nodes):
+        for j in range(virtual_nodes):
+            nodes.append(Node(f'Node{nos[i] + j + 1}', addrs[i], port1s[i] + j, masterAddr, '30000', port2s[i] + j, []))
+    connect(nodes, dim)
+    return nodes
+
+
+# 处理16、32、64点的连接
+def connect(nodes, dim):
+    assert dim > 3
+    node_nums = len(nodes)
+    for i in range(node_nums):
+        a = i // 4
+        b = i % 4
+        # 处理四点内的连接
+        nodes[i].add_neighbor(nodes[a * 4 + (b + 1) % 4].address())
+        nodes[i].add_neighbor(nodes[a * 4 + (b - 1 + 4) % 4].address())
+        # 处理十六点内的连接
+        a = i // 16
+        b = i % 16
+        nodes[i].add_neighbor(nodes[a * 16 + (b + 4) % 16].address())
+        nodes[i].add_neighbor(nodes[a * 16 + (b - 4 + 16) % 16].address())
+        if dim == 4:
+            continue
+        if dim == 5:
+            nodes[i].add_neighbor(nodes[(i + 16) % node_nums].address())
+        if dim == 6:
+            a = i // 64
+            b = i % 64
+            nodes[i].add_neighbor(nodes[a * 64 + (b + 16) % 64].address())
+            nodes[i].add_neighbor(nodes[a * 64 + (b - 16 + 64) % 64].address())
+    return nodes
+
+
+
+# 按照新要求构造拓扑文件的入口
+def construct_hybercube_subject2Li(addrs):
+    for i in range(4, 11):
+        if i <= 6:  # 直接构造
+            nodes = construct_hybercube_new(addrs, list(range(0, 2 ** i, 2 ** (i - 4))), [30000] * 16, [30200] * 16, i)
+        else:   # 两层递归构造
+            nodes = []
+            if i == 8:
+                for j in range(16): # 顶层为四维，每一个点在扩展为4维
+                    nodes.extend(construct_hybercube_new(addrs[j: j + 1], [j * 16], [30000], [30200], 4))
+                for j in range(16):
+                    crossDomainNodes = []
+                    for k in range(16):
+                        crossDomainNodes.append(nodes[16 * k + j])
+                    connect(crossDomainNodes, 4)
+            elif i == 9:
+                for j in range(16):
+                    nodes.extend(construct_hybercube_new(addrs[j: j + 1], [j * 32], [30000], [30200], 5))
+                for j in range(32):
+                    crossDomainNodes = []
+                    for k in range(16):
+                        crossDomainNodes.append(nodes[32 * k + j])
+                    connect(crossDomainNodes, 4)
+            elif i == 10:
+                # 4 + 6
+                for j in range(16):
+                    nodes.extend(construct_hybercube_new(addrs[j: j + 1], [j * 64], [30000], [30200], 6))
+                for j in range(64):
+                    crossDomainNodes = []
+                    for k in range(16):
+                        crossDomainNodes.append(nodes[64 * k + j])
+                    connect(crossDomainNodes, 4)
+                with open(f'config/hybercube-10.ini', 'w') as f:
+                    for node in nodes:
+                        f.write(node.str())
+                # 5 + 5
+                for j in range(32):
+                    nodes.extend(construct_hybercube_new(addrs[j // 2: j // 2 + 1], [0 + (j % 2) * 32], [30000 + (j % 2) * 32], [30200 + (j % 2) * 32], 5))
+                for j in range(32):
+                    crossDomainNodes = []
+                    for k in range(32):
+                        crossDomainNodes.append(nodes[32 * k + j])
+                    connect(crossDomainNodes, 5)
+                with open(f'config/hybercube-10-55.ini', 'w') as f:
+                    for node in nodes:
+                        f.write(node.str())
+                break
+            else:
+                continue
+        with open(f'config/hybercube-{i}.ini', 'w') as f:
+            for node in nodes:
+                f.write(node.str())     
+            
             
 def main():
     slave_addrs = slaveAddrs.split(":")
@@ -143,6 +238,7 @@ def main():
         create_topology('hybercube', i, nodes)
         create_topology('bus', i, nodes)
         create_topology('ring', i, nodes)
+    construct_hybercube_subject2Li(nodes)
             
     
 if __name__ == '__main__':
