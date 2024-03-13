@@ -47,5 +47,5 @@ go install
 
 
 
-# git config --global user.email "2470145197@qq.com" && git config --global user.name "123" && git stash && git pull origin master && python3 slave.py
+git config --global user.email "2470145197@qq.com" && git config --global user.name "123" && git stash && git pull origin master && python3 slave.py
 cd $WORKDIR && rm -rf config && rm -rf gossip/config && rm -rf mgossip/config && mkdir config && python3 topology.py && cp -r config mgossip && cp -r config gossip
