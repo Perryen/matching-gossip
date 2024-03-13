@@ -303,7 +303,8 @@ func start() error {
 	c.Neighbors = neighbors
 	c.PushPullInterval = 0 // 禁用PushPull协程(即反熵传播)
 	c.GossipNodes = *gossipNodes 
-	//c.RetransmitMult = *retransmitMult
+	c.UDPBufferSize = 1500
+	c.RetransmitMult = 1
 	c.Name = fmt.Sprintf("%s:%d", advertiseAddr, bindPort)
 	// 创建 Gossip 网络
 	m, err := mgossip.Create(c)

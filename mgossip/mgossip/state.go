@@ -345,7 +345,6 @@ func (m *Memberlist) probeNode(node *nodeState) {
 		m.awareness.ApplyDelta(awarenessDelta)
 	}()
 	if node.State == StateAlive {
-		m.logger.Printf("send a ping msg to %s", node.Address())
 		if err := m.encodeAndSendMsg(node.FullAddress(), pingMsg, &ping); err != nil {
 			m.logger.Printf("[ERR] memberlist: Failed to send UDP ping: %s", err)
 			if failedRemote(err) {
@@ -603,7 +602,7 @@ func (m *Memberlist) gossip() {
 			neighbors = append(neighbors, node)
 		}
 	}
-	m.logger.Println("[Test] gossip neighbors: ", neighbors)
+	//m.logger.Println("[Test] gossip neighbors: ", neighbors)
 	kNodes := kRandomNodes(m.config.GossipNodes, neighbors, func(n *nodeState) bool {
 		if n.Name == m.config.Name {
 			return true
@@ -620,7 +619,7 @@ func (m *Memberlist) gossip() {
 		}
 	})
 	m.nodeLock.RUnlock()
-	m.logger.Println("[Test] selected nodes: ", kNodes)
+	//m.logger.Println("[Test] selected nodes: ", kNodes)
 	// Compute the bytes available
 	bytesAvail := m.config.UDPBufferSize - compoundHeaderOverhead - labelOverhead(m.config.Label)
 	if m.config.EncryptionEnabled() {

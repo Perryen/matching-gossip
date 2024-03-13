@@ -5,6 +5,7 @@ import time
 import os
 import threading
 import traceback
+import datetime
 
 from calculate import calculate 
 from clean_data import clean_data
@@ -62,7 +63,7 @@ def main():
                         i += 1
                     except:
                         with open("error.log", "a") as f:
-                            f.write(traceback.format_exc())
+                            f.write(datetime.datetime.now(), traceback.format_exc())
                         time.sleep(60)        
     clean_data('data')
         
