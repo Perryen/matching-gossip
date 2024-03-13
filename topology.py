@@ -177,7 +177,7 @@ def connect(nodes, dim):
 
 
 # 按照新要求构造拓扑文件的入口
-def construct_hybercube_subject2Li(addrs):
+def construct_hybercube_submit2Li(addrs):
     for i in range(4, 11):
         if i <= 6:  # 直接构造
             nodes = construct_hybercube_new(addrs, list(range(0, 2 ** i, 2 ** (i - 4))), [30000] * 16, [30200] * 16, i)
@@ -212,8 +212,9 @@ def construct_hybercube_subject2Li(addrs):
                     for node in nodes:
                         f.write(node.str())
                 # 5 + 5
+                nodes = []
                 for j in range(32):
-                    nodes.extend(construct_hybercube_new(addrs[j // 2: j // 2 + 1], [0 + (j % 2) * 32], [30000 + (j % 2) * 32], [30200 + (j % 2) * 32], 5))
+                    nodes.extend(construct_hybercube_new(addrs[j // 2: j // 2 + 1], [j * 32], [30000 + (j % 2) * 32], [30200 + (j % 2) * 32], 5))
                 for j in range(32):
                     crossDomainNodes = []
                     for k in range(32):
@@ -238,7 +239,7 @@ def main():
         create_topology('hybercube', i, nodes)
         create_topology('bus', i, nodes)
         create_topology('ring', i, nodes)
-    construct_hybercube_subject2Li(nodes)
+    construct_hybercube_submit2Li(nodes)
             
     
 if __name__ == '__main__':
