@@ -30,6 +30,9 @@ var (
   	nodeName      = flag.String("nodeName", "firstNode", "节点名称")
 	gossipNodes   = flag.Int("gossipNodes", 2, "谣言传播节点个数")
 	retransmitMult = flag.Int("retransmitMult", 4, "memberlist重传次数因子")
+	UDPBufferSize = flag.Int("UDPBufferSize", 1400, "UDP包的最大长度")
+	systemBroadcastMult = flag.Int("systemBroadcastMult", 1, "系统广播队列的重传次数因子")
+	probeInterval = flag.Int("probeInterval", 5, "probe定时")
   	bindAddr string
 	advertiseAddr string
   	bindPort int
@@ -296,8 +299,9 @@ func start() error {
 	c.AdvertisePort = bindPort
 	c.PushPullInterval = 0 // 禁用PushPull协程(即反熵传播过程)
 	c.GossipNodes = *gossipNodes // 可配置
-	c.UDPBufferSize = 1500
-	c.RetransmitMult = 1
+	c.UDPBufferSize = *UDPBufferSize
+	c.RetransmitMult = *systemBroadcastMult
+	c.ProbeInterval = time.Duration(*probeInterval) * time.Second
 	c.Name = fmt.Sprintf("%s:%d", advertiseAddr, bindPort)
 	// 创建 Gossip 网络
 	m, err := gossip.Create(c)

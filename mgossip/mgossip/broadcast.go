@@ -85,7 +85,6 @@ func (m *Memberlist) getBroadcasts(overhead, limit int) [][]byte {
 		for _, msg := range toSend {
 			bytesUsed += len(msg) + overhead
 		}
-
 		// Check space remaining for user messages
 		avail := limit - bytesUsed
 		if avail > overhead+userMsgOverhead {
