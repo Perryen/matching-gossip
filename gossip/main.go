@@ -303,10 +303,16 @@ func start() error {
 	c.RetransmitMult = *systemBroadcastMult
 	c.ProbeInterval = time.Duration(*probeInterval) * time.Second
 	c.Name = fmt.Sprintf("%s:%d", advertiseAddr, bindPort)
+	broadcasts = &gossip.TransmitLimitedQueue{
+		RetransmitMult: *retransmitMult,
+	}
 	// 创建 Gossip 网络
 	m, err := gossip.Create(c)
 	if err != nil {
 		return err
+	}
+	broadcasts.NumNodes = func() int {
+		return m.NumMembers()
 	}
 	// 第一个节点没有 member，从第二个开始有 member
 	if len(memberlistAddr) > 0 {
@@ -314,13 +320,6 @@ func start() error {
 		if err != nil {
 		return err
 		}
-	}
-
-	broadcasts = &gossip.TransmitLimitedQueue{
-		NumNodes: func() int {
-			return m.NumMembers()
-		},
-		RetransmitMult: *retransmitMult,  // memberlist对于每条信息大概重发3 * log(N + 1)次
 	}
 	node := m.LocalNode()
 	fmt.Printf("Local member %s:%d\n", node.Addr, node.Port)
