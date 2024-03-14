@@ -51,7 +51,7 @@ for ((i=firstNode; i<=endNode; i++)); do
     # 使用nohup在后台运行main.go程序，即运行一个网络节点
     rm "$i.txt"
     touch "$i.txt"
-    nohup go run main.go -nodeName ${node}${i} -conf $confFile -gossipNodes $gossipNodes -retransmitMult $retransmitMult -UDPBufferSize $UDPBufferSize -systemBroadcastMult $systemBroadCastMult -probeInterval $probeInterval > "$i.txt" 2>&1 &
+    nohup go run main.go -nodeName ${node}${i} -conf $confFile -gossipNodes $gossipNodes -retransmitMult $retransmitMult -UDPBufferSize $UDPBufferSize -systemBroadcastMult $systemBroadcastMult -probeInterval $probeInterval > "$i.txt" 2>&1 &
     # 种子节点默认是主服务器上的第一个节点
     if [[ $isMaster -eq 1 && i -eq firstNode ]]; then  
         sleep 3
