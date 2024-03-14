@@ -31,8 +31,10 @@ def main():
     for topology in topologys:
         for dim in dims:
             configFile = f"{topology}-{dim}"
+            if dim == 10:
+                configFile = f"{topology}-{dim}-55"
             node = 2 ** dim
-            limit_time = int(1e9) * (2 ** dim)
+            limit_time = int(1e9) * dim
             nodes_num = node // (num_slaves + 1)
             nodes_num = max(1, nodes_num)
             nodes = []
@@ -63,7 +65,7 @@ def main():
                         i += 1
                     except:
                         with open("error.log", "a") as f:
-                            f.write(datetime.datetime.now(), traceback.format_exc())
+                            f.write(datetime.datetime.now() + ", " + traceback.format_exc())
                         time.sleep(60)        
     clean_data('data')
         
