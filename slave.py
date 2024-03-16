@@ -3,6 +3,10 @@
 from flask import Flask, request, send_file
 import os
 import threading
+import json
+
+
+from calculate import analyze_logs
 
 
 app = Flask(__name__)
@@ -30,6 +34,20 @@ def mgossip_logs(logname):
 def gossip_logs(logname):
     return send_file(f"gossip/logs/{logname}")
 
+
+# 分析本机日志
+@app.route('/logs', methods=['POST'])
+def logs():
+    data = request.get_json()
+    begin_node = data.get('beginNode')
+    end_node = data.get('endNode')
+    mode = data.get('mode')
+    limit_time = data.get('limitTime')
+    node_count = end_node + 1 - begin_node
+    receive_times, send_packet_count = analyze_logs(mode, begin_node, end_node, limit_time)
+    res = json.dumps({'receiveTimes': receive_times, 'sendPacketCount': send_packet_count, 'nodeCount': node_count})
+    return res
+    
     
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=30600)

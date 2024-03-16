@@ -13,45 +13,50 @@ parser.add_argument("-result_file", help="the file results store in, if none, it
 args = parser.parse_args()
 
 
-def calculate(logs_dir, gossip_interval, limit_time, result_file):
-    begin_time = 0
+create_packet_pattern = r'.*I create a message called (\d+), now time (\d+).*'
+receive_packet_pattern = r'.*I receive a message called (\d+), now time is (\d+).*'
+send_packet_pattern = r'.*I send a packet to ([\d,.]+):(\d+), now time (\d+).*'
+
+
+
+def analyze_logs(mode, begin_node, end_node, limit_time):
+    flag = True 
     receive_times = []
-    infected_nodes_every_epoch = []
     send_packet_count = 0
-    node_count = 0
-    create_packet_pattern = r'.*I create a message called (\d+), now time (\d+).*'
-    receive_packet_pattern = r'.*I receive a message called (\d+), now time is (\d+).*'
-    send_packet_pattern = r'.*I send a packet to ([\d,.]+):(\d+), now time (\d+).*'
+    for i in range(begin_node, end_node + 1):
+        log_file = os.path.join(mode, 'logs', f'Node{i}.log')
+        with open(log_file, "r", encoding="utf-8") as f:
+            for line in f.readlines():
+                # 计算种子节点创造测试消息的起始时间
+                m = re.match(create_packet_pattern, line)
+                if m:
+                    receive_times.append(int(m.group(2)))
+                    limit_time += receive_times[-1]
+                    flag = False
+                # 计算每个节点被感染的时间
+                m = re.match(receive_packet_pattern, line)
+                if m and flag:
+                    receive_times.append(int(m.group(2)))
+                    flag = False
+                # 计算每个节点在限制时间内发送的总数据包 
+                m = re.match(send_packet_pattern, line)
+                if m:
+                    now_time = m.group(3)
+                    if int(now_time) >= limit_time:
+                        break
+                    send_packet_count += 1
+    return receive_times, send_packet_count
+
+
+def calculate(gossip_interval, result_file, receive_times, send_packet_count, node_count):
     
-    for file in os.listdir(logs_dir):
-        file_path = os.path.join(logs_dir, file)
-        if not os.path.isdir(file_path) and file.split(".")[-1] == 'log': # 判断是日志文件
-            node_count += 1 # 每一个日志文件代表一个网络节点的日志输出
-            flag = True 
-            with open(file_path, "r", encoding="utf-8") as f:
-                for line in f.readlines():
-                    # 计算种子节点创造测试消息的起始时间
-                    m = re.match(create_packet_pattern, line)
-                    if m:
-                        begin_time = int(m.group(2))
-                        flag = False
-                    # 计算每个节点被感染的时间
-                    m = re.match(receive_packet_pattern, line)
-                    if m and flag:
-                        receive_times.append(int(m.group(2)))
-                        flag = False
-                    # 计算每个节点在限制时间内发送的总数据包 
-                    m = re.match(send_packet_pattern, line)
-                    if m:
-                        now_time = m.group(3)
-                        if int(now_time) >= begin_time + limit_time:
-                            break
-                        send_packet_count += 1
+    infected_nodes_every_epoch = []
+
     # 以下计算各个周期内被感染的节点数
     receive_times.sort()
-    count = 1
+    count = 0
     interval = gossip_interval
-    time_limit = begin_time + interval
+    time_limit = receive_times[0] + interval
     for each_time in receive_times:
         if each_time >= time_limit:
             infected_nodes_every_epoch.append(count)
@@ -65,13 +70,13 @@ def calculate(logs_dir, gossip_interval, limit_time, result_file):
     for i, count in enumerate(infected_nodes_every_epoch):
         nodes_sum += count
         convergence_rate_every_epoch[i] = round(nodes_sum / node_count, 2)
-    convergence_time = receive_times[-1] - begin_time
+    convergence_time = receive_times[-1] - receive_times[0]
     try:
         with open(result_file, 'a') as f:
-            f.write(f"node convergence rate: {(len(receive_times) + 1) / node_count:.2f}\nconvergence time: {convergence_time} ns\ntotal packet the network send: {send_packet_count}\ninfected nodes every gossip epoch: {infected_nodes_every_epoch}\nconvergence_rate_every_epoch: {convergence_rate_every_epoch}\n")
+            f.write(f"node convergence rate: {(len(receive_times)) / node_count:.2f}\nconvergence time: {convergence_time} ns\ntotal packet the network send: {send_packet_count}\ninfected nodes every gossip epoch: {infected_nodes_every_epoch}\nconvergence_rate_every_epoch: {convergence_rate_every_epoch}\n")
     except Exception as e:
         print(e)
-        print(f"node convergence rate: {(len(receive_times) + 1) / node_count:.2f}")
+        print(f"node convergence rate: {(len(receive_times)) / node_count:.2f}")
         print(f"convergence time: {convergence_time} ns")
         print(f"total packet the network send: {send_packet_count}")
         print(f"infected nodes every gossip epoch: {infected_nodes_every_epoch}")
