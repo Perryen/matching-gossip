@@ -38,7 +38,7 @@ def gossip_logs(logname):
 # 分析本机日志
 @app.route('/logs', methods=['POST'])
 def logs():
-    data = request.get_json()
+    data = json.loads(request.get_data())
     begin_node = data.get('beginNode')
     end_node = data.get('endNode')
     mode = data.get('mode')

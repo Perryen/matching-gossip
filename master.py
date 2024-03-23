@@ -36,13 +36,7 @@ def main():
     gossip_nodes = 3
     retran_mult = 10
     
-    node = 2 ** dim
-    nodes_num = node // (num_slaves + 1)  # 每台实体主机上运行的节点数
-    nodes_num = max(1, nodes_num)
-    nodes = []
-    for i in range(4):
-        nodes.extend(addrs[4 * i: 4 * i + min(node // 4, 4)])
-    nodes.pop(0)
+    
     
     for topology in topologys:
         for dim in dims:
@@ -50,7 +44,14 @@ def main():
             if dim == 10:
                 configFile = f"{topology}-{dim}-55"
             limit_time = int(1e9) * dim
-    
+            node = 2 ** dim
+            nodes_num = node // (num_slaves + 1)  # 每台实体主机上运行的节点数
+            nodes_num = max(1, nodes_num)
+            nodes = []
+            for i in range(4):
+                nodes.extend(addrs[4 * i: 4 * i + min(node // 4, 4)])
+            nodes.pop(0)
+            
             for mode in ['mgossip', 'gossip']:
                 master_command = f"bash run.sh {mode} config/{configFile}.ini 1 {nodes_num} 1 {gossip_nodes} {retran_mult} {clusterInitTime} {packetDiffuseTime} {slaveWaitTime} {UDP_buffer_size} {system_broadcast_mult} {probe_interval}"
                 i = 0
@@ -76,7 +77,7 @@ def main():
                                 'limitTime': limit_time + receive_times[0],
                             }
                             res = requests.post(f'http://{slave_addr}:30600/logs', data=json.dumps(params))
-                            data = json.loads(res.data)
+                            data = json.loads(res.content)
                             receive_times.extend(data['receiveTimes'])
                             send_packet_count += data['sendPacketCount']
                             node_count += data['nodeCount']
