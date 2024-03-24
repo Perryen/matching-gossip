@@ -20,10 +20,10 @@ send_packet_pattern = r'.*I send a packet to ([\d,.]+):(\d+), now time (\d+).*'
 
 
 def analyze_logs(mode, begin_node, end_node, limit_time):
-    flag = True 
     receive_times = []
     send_packet_count = 0
     for i in range(begin_node, end_node + 1):
+        flag = True 
         log_file = os.path.join(mode, 'logs', f'Node{i}.log')
         with open(log_file, "r", encoding="utf-8") as f:
             for line in f.readlines():

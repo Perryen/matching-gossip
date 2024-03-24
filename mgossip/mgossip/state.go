@@ -602,7 +602,7 @@ func (m *Memberlist) gossip() {
 			neighbors = append(neighbors, node)
 		}
 	}
-	//m.logger.Println("[Test] gossip neighbors: ", neighbors)
+	m.logger.Println("[Test] gossip neighbors: ", neighbors)
 	kNodes := kRandomNodes(m.config.GossipNodes, neighbors, func(n *nodeState) bool {
 		if n.Name == m.config.Name {
 			return true

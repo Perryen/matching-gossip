@@ -7,6 +7,7 @@ import threading
 import traceback
 import datetime
 import json
+from concurrent.futures import ThreadPoolExecutor
 
 from calculate import calculate, analyze_logs
 from clean_data import clean_data
@@ -60,7 +61,7 @@ def main():
                     try:
                         threading.Thread(target=lambda c: os.system(c), args=(master_command,)).start()
                         for j, slave_addr in enumerate(nodes):
-                            slave_command = f"bash run.sh {mode} config/{configFile}.ini {nodes_num * (j + 1) + 1} {nodes_num * (j + 2)} 0 2 10 {clusterInitTime} {packetDiffuseTime} {slaveWaitTime} {UDP_buffer_size} {system_broadcast_mult} {probe_interval}"
+                            slave_command = f"bash run.sh {mode} config/{configFile}.ini {nodes_num * (j + 1) + 1} {nodes_num * (j + 2)} 0 {gossip_nodes} {retran_mult} {clusterInitTime} {packetDiffuseTime} {slaveWaitTime} {UDP_buffer_size} {system_broadcast_mult} {probe_interval}"
                             requests.get(f'http://{slave_addr}:30600/execute?command={slave_command}')
                         
                         sleep_time = clusterInitTime + packetDiffuseTime + masterWaitTime

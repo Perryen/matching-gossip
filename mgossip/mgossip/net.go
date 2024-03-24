@@ -547,7 +547,7 @@ func (m *Memberlist) handleCompound(buf []byte, from net.Addr, timestamp time.Ti
 }
 
 func (m *Memberlist) handlePing(buf []byte, from net.Addr) {
-	m.logger.Printf("[Test] receive ping msg from %s", from.String())
+	//m.logger.Printf("[Test] receive ping msg from %s", from.String())
 	var p ping
 	if err := decode(buf, &p); err != nil {
 		m.logger.Printf("[ERR] memberlist: Failed to decode ping request: %s %s", err, LogAddress(from))

@@ -287,11 +287,7 @@ func (q *TransmitLimitedQueue) getTransmitRange() (minTransmit, maxTransmit int)
 // GetBroadcasts is used to get a number of broadcasts, up to a byte limit
 // and applying a per-message overhead as provided.
 func (q *TransmitLimitedQueue) GetBroadcasts(overhead, limit int) [][]byte {
-	if q == nil {
-		fmt.Println("广播队列指针为空")
-		return nil
-	}
-	q.mu.Lock()   //  怎么会报空指针错误呢？
+	q.mu.Lock()   
 	defer q.mu.Unlock()
 
 	// Fast path the default case
