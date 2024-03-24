@@ -595,15 +595,7 @@ func (m *Memberlist) gossip() {
 
 	// Get some random live, suspect, or recently dead nodes
 	m.nodeLock.RLock()
-	neighbors := make([]*nodeState, 0)
-	for _, node := range m.nodes {
-		nodeAddr := node.Node.Address()
-		if find(m.neighbors, nodeAddr) != -1 {
-			neighbors = append(neighbors, node)
-		}
-	}
-	m.logger.Println("[Test] gossip neighbors: ", neighbors)
-	kNodes := kRandomNodes(m.config.GossipNodes, neighbors, func(n *nodeState) bool {
+	kNodes := kRandomNodes(m.config.GossipNodes, m.neighbors, func(n *nodeState) bool {
 		if n.Name == m.config.Name {
 			return true
 		}
@@ -619,7 +611,6 @@ func (m *Memberlist) gossip() {
 		}
 	})
 	m.nodeLock.RUnlock()
-	//m.logger.Println("[Test] selected nodes: ", kNodes)
 	// Compute the bytes available
 	bytesAvail := m.config.UDPBufferSize - compoundHeaderOverhead - labelOverhead(m.config.Label)
 	if m.config.EncryptionEnabled() {
@@ -672,15 +663,8 @@ func (m *Memberlist) pushPull() {
 	// return // just for test
 	// Get a random live node
 	m.nodeLock.RLock()
-	// 修改备选集合实现适应拓扑
-	neighbors := make([]*nodeState, 0)
-	for _, node := range m.nodes {
-		nodeAddr := node.Node.Address()
-		if find(m.neighbors, nodeAddr) != -1 {
-			neighbors = append(neighbors, node)
-		}
-	}
-	nodes := kRandomNodes(1, neighbors, func(n *nodeState) bool {
+
+	nodes := kRandomNodes(1, m.neighbors, func(n *nodeState) bool {
 		return n.Name == m.config.Name ||
 			n.State != StateAlive
 	})
@@ -1063,10 +1047,15 @@ func (m *Memberlist) aliveNode(a *alive, notify chan struct{}, bootstrap bool) {
 
 		// Add at the end and swap with the node at the offset
 		m.nodes = append(m.nodes, state)
+
+		// 如果是邻居则增加节点
+		if find(m.config.Neighbors, state.Node.Address()) != -1 {
+			m.neighbors = append(m.neighbors, state)
+		}
 		m.nodes[offset], m.nodes[n] = m.nodes[n], m.nodes[offset]
 
 		// Update numNodes after we've added a new node
-		atomic.AddUint32(&m.numNodes, 1)
+		atomic.AddUint32(&m.numNodes, 1)  // 
 	} else {
 		// Check if this address is different than the existing node unless the old node is dead.
 		if !bytes.Equal([]byte(state.Addr), a.Addr) || state.Port != a.Port {

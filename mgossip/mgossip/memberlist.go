@@ -82,7 +82,7 @@ type Memberlist struct {
 	// metricLabels is the slice of labels to put on all emitted metrics
 	metricLabels []metrics.Label
 
-	neighbors []string //自定义
+	neighbors []*nodeState  // 直接邻居节点列表
 }
 
 // BuildVsnArray creates the array of Vsn
@@ -220,7 +220,7 @@ func newMemberlist(conf *Config) (*Memberlist, error) {
 		broadcasts:           &TransmitLimitedQueue{RetransmitMult: conf.RetransmitMult},
 		logger:               logger,
 		metricLabels:         conf.MetricLabels,
-		neighbors:            conf.Neighbors,
+		neighbors:            make([]*nodeState, 0),
 	}
 	m.broadcasts.NumNodes = func() int {
 		return m.estNumNodes()

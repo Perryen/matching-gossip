@@ -7,7 +7,7 @@ import threading
 import traceback
 import datetime
 import json
-from concurrent.futures import ThreadPoolExecutor
+
 
 from calculate import calculate, analyze_logs
 from clean_data import clean_data
@@ -70,6 +70,7 @@ def main():
                         # 开始收集各服务器数据
                         receive_times, send_packet_count = analyze_logs(mode, 1, nodes_num, limit_time)
                         node_count = nodes_num
+                        
                         for j, slave_addr in enumerate(nodes):
                             params = {
                                 'beginNode': (j + 1) * nodes_num + 1,
@@ -83,7 +84,7 @@ def main():
                             send_packet_count += data['sendPacketCount']
                             node_count += data['nodeCount']
                             
-                        # 整合数据计算实验指标
+                        #整合数据计算实验指标
                         calculate(5e8, os.path.join('data', f'{mode}-{topology}-{dim}.txt'), receive_times, send_packet_count, node_count)
                         i += 1
                     except:

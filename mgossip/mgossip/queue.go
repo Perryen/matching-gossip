@@ -3,7 +3,6 @@ package mgossip
 import (
 	"math"
 	"sync"
-	"fmt"
 
 	"github.com/google/btree"
 )
