@@ -239,7 +239,7 @@ def main():
         create_topology('hybercube', i, nodes)
         create_topology('bus', i, nodes)
         create_topology('ring', i, nodes)
-    construct_hybercube_submit2Li(nodes)
+    #construct_hybercube_submit2Li(nodes)
             
     
 if __name__ == '__main__':
