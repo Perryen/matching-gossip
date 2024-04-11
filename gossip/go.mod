@@ -1,6 +1,6 @@
 module github.com/zhuohuashiyi/gossip
 
-go 1.21
+go 1.18
 
 require (
 	github.com/armon/go-metrics v0.0.0-20180917152333-f0300d1749da
