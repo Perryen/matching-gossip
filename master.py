@@ -89,7 +89,7 @@ def main():
                         i += 1
                     except:
                         with open("error.log", "a") as f:
-                            f.write(datetime.datetime.now() + ", " + traceback.format_exc())
+                            f.write(str(datetime.datetime.now()) + ", " + traceback.format_exc())
                         time.sleep(60)        
     clean_data('data')
         
