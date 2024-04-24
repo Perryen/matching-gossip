@@ -50,7 +50,7 @@ def main():
             nodes_num = max(1, nodes_num)
             nodes = []
             for i in range(4):
-                nodes.extend(addrs[8 * i: 8 * i + min(node // 4, 4)])
+                nodes.extend(addrs[8 * i: 8 * i + min(node // 4, 8)])
             nodes.pop(0)
             
             for mode in ['mgossip', 'gossip']:

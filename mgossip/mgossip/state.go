@@ -622,7 +622,7 @@ func (m *Memberlist) gossip() {
 		if len(msgs) == 0 {
 			return
 		}
-		
+
 		addr := node.Address()
 		selfAddr := fmt.Sprintf("%s:%d", m.config.AdvertiseAddr, m.config.AdvertisePort)
 		if addr != selfAddr {
