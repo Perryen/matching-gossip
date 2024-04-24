@@ -624,13 +624,13 @@ func (m *Memberlist) gossip() {
 		}
 
 		addr := node.Address()
-		selfAddr := fmt.Sprintf("%s:%d", m.config.AdvertiseAddr, m.config.AdvertisePort)
-		if addr != selfAddr {
-			time.Sleep(50 * time.Microsecond)
-		}
-		if addr[: 6] != selfAddr[: 6] {
-			time.Sleep(450 * time.Microsecond)
-		}
+		// selfAddr := fmt.Sprintf("%s:%d", m.config.AdvertiseAddr, m.config.AdvertisePort)
+		// if addr != selfAddr {
+		// 	time.Sleep(50 * time.Microsecond)
+		// }
+		// if addr[: 6] != selfAddr[: 6] {
+		// 	time.Sleep(450 * time.Microsecond)
+		// }
 
 		if len(msgs) == 1 {
 			if msgs[0][1] == 'd' {
