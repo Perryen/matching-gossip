@@ -73,7 +73,7 @@ def calculate(gossip_interval, result_file, receive_times, send_packet_count, no
     convergence_time = receive_times[-1] - receive_times[0]
     try:
         with open(result_file, 'a') as f:
-            f.write(f"node convergence rate: {(len(receive_times)) / node_count:.2f}\nconvergence time: {convergence_time} ns\ntotal packet the network send: {send_packet_count}\ninfected nodes every gossip epoch: {infected_nodes_every_epoch}\nconvergence_rate_every_epoch: {convergence_rate_every_epoch}\n")
+            f.write(f"node convergence rate: {(len(receive_times)) / node_count:.2f}\nconvergence time: {convergence_time} ns\ntotal packet the network send(log2): {send_packet_count}\ninfected nodes every gossip epoch: {infected_nodes_every_epoch}\nconvergence_rate_every_epoch: {convergence_rate_every_epoch}\n")
     except Exception as e:
         print(e)
         print(f"node convergence rate: {(len(receive_times)) / node_count:.2f}")

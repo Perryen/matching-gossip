@@ -1,11 +1,9 @@
 #!/bin/sh
 # 用于seed平台设置延时，运行示例：bash tc.sh 0(1,2,3)
 
-
 # 删除指定网卡接口上的根队列规则
 # seed平台似乎会设置一些默认规则，避免出现Error: Exclusivity flag on, cannot modify
 tc qdisc del dev net$1 root
-
 
 # 创建了一个优先级队列规则，并在队列1:1中应用50ms的延迟，在队列1:2中应用500ms的延迟
 tc qdisc add dev net$1 root handle 1: prio

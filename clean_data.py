@@ -3,7 +3,7 @@
 import os
 import argparse
 import re
-
+import math
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-data_dir", help="your data dirctory", default="data", type=str)
@@ -46,7 +46,7 @@ def clean_data(data_dir):
             min25_mean_convergence_time = round(sum(convergence_times[: n // 4]) / (n // 4), 2)
             try:
                 with open(os.path.join(data_dir, 'data.txt'), 'a') as f:
-                    f.write(f"{file}\ntotal test cases: {n}\nmean convergence time: {mean_convergence_time}\ndrop max 10% and min 10% mean convergence time: {drop_mean_convergence_time}\nmin 25 % mean convergence time: {min25_mean_convergence_time}\nvar and std of convergence time: {calculate_square_error(convergence_times, mean_convergence_time)}\nmean send packet count: {mean_send_packet_count}\ndrop max 10% and min 10% mean send packet count: {drop_mean_send_packet_count}\nvar and std of send packet count: {calculate_square_error(send_packet_counts, mean_send_packet_count)}\n")
+                    f.write(f"{file}\ntotal test cases: {n}\nmean convergence time: {mean_convergence_time}\ndrop max 10% and min 10% mean convergence time: {drop_mean_convergence_time}\nmin 25 % mean convergence time: {min25_mean_convergence_time}\nvar and std of convergence time: {calculate_square_error(convergence_times, mean_convergence_time)}\nmean send packet count(log2): {round(math.log2(mean_send_packet_count), 2)}\ndrop max 10% and min 10% mean send packet count(log2): {round(math.log2(drop_mean_send_packet_count), 2)}\nvar and std of send packet count: {calculate_square_error(send_packet_counts, mean_send_packet_count)}\n")
             except Exception as e:
                 print(e)
                 print(file)
