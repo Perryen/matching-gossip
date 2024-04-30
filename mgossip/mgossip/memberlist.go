@@ -1,17 +1,3 @@
-/*
-memberlist is a library that manages cluster
-membership and member failure detection using a gossip based protocol.
-
-The use cases for such a library are far-reaching: all distributed systems
-require membership, and memberlist is a re-usable solution to managing
-cluster membership and node failure detection.
-
-memberlist is eventually consistent but converges quickly on average.
-The speed at which it converges can be heavily tuned via various knobs
-on the protocol. Node failures are detected and network partitions are partially
-tolerated by attempting to communicate to potentially dead nodes through
-multiple routes.
-*/
 package mgossip
 
 import (
@@ -26,6 +12,7 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
+	"sort"
 
 	"github.com/armon/go-metrics"
 	multierror "github.com/hashicorp/go-multierror"
@@ -83,6 +70,8 @@ type Memberlist struct {
 	metricLabels []metrics.Label
 
 	neighbors []*nodeState  // 直接邻居节点列表
+
+	respTime  map[string]int64   // 自动探测记录回复时间
 }
 
 // BuildVsnArray creates the array of Vsn
@@ -221,6 +210,7 @@ func newMemberlist(conf *Config) (*Memberlist, error) {
 		logger:               logger,
 		metricLabels:         conf.MetricLabels,
 		neighbors:            make([]*nodeState, 0),
+		respTime:             make(map[string]int64, 0),
 	}
 	m.broadcasts.NumNodes = func() int {
 		return m.estNumNodes()
@@ -280,6 +270,7 @@ func (m *Memberlist) Join(existing []string) (int, error) {
 			continue
 		}
 
+
 		for _, addr := range addrs {
 			hp := joinHostPort(addr.ip.String(), addr.port)
 			a := Address{Addr: hp, Name: addr.nodeName}
@@ -291,6 +282,8 @@ func (m *Memberlist) Join(existing []string) (int, error) {
 			}
 			numSuccess++
 		}
+	
+		
 
 	}
 	if numSuccess > 0 {
@@ -792,6 +785,56 @@ func (m *Memberlist) checkBroadcastQueueDepth() {
 			metrics.AddSampleWithLabels([]string{"memberlist", "queue", "broadcasts"}, float32(numq), m.metricLabels)
 		case <-m.shutdownCh:
 			return
+		}
+	}
+}
+
+func (m *Memberlist) SendMsg(to *Node, msg []byte, msgType messageType) error {
+	// add messageType to the header
+	buf := make([]byte, 1, len(msg) + 1)
+	buf[0] = byte(msgType)
+	buf = append(buf, msg...)
+
+	// send the packet
+	a := Address{Addr: to.Address(), Name: to.Name}
+	return m.rawSendMsgPacket(a, to, buf)
+}
+
+
+
+// automatically ping all the nodes and select the minimum cost time, connected to each other
+func (m *Memberlist) SelectNearestNeighbor(nodeNum int) {
+	log.Println("begin to ping all the nodes")
+	// send ping msg to all nodes
+	nodes := make([]string, 0)
+	for _, node := range m.nodes {
+		if node.Address() == fmt.Sprintf("%s:%d", m.config.BindAddr, m.config.BindPort) {
+			continue
+		}
+		// Attempt a push pull
+		if err := m.pushPullNode(node.FullAddress(), false); err != nil {
+			m.logger.Printf("[ERR] memberlist: Push/Pull with %s failed: %s", node.Name, err)
+		}
+		msg := fmt.Sprintf("Ping: ping from %s:%d", m.config.BindAddr, m.config.BindPort)
+		m.SendMsg(&node.Node, []byte(msg), pingNodeMsg)
+		m.respTime[node.Address()] = time.Now().UnixMicro()
+		nodes = append(nodes, node.Address())
+	}
+	time.Sleep(3 * time.Second)
+	// begin to choose nearest node
+	sort.Slice(nodes, func(i, j int) bool {
+		return m.respTime[nodes[i]] < m.respTime[nodes[j]]
+	})
+	// setup neighbors and send request to neighbors
+	nodeNum = min(nodeNum, len(nodes))
+	for _, node := range nodes[: nodeNum] {
+		m.neighbors = append(m.neighbors, node)
+		log.Println("the neighbors list after updated", m.neighbors)
+		msg := fmt.Sprintf("Neighbor: neighbor conn from %s:%d", m.config.BindAddr, m.config.BindPort)
+		for _, each_node := range m.nodes {
+			if each_node.Address() == node {
+				m.SendMsg(&each_node.Node, []byte(msg), neighborMsg)
+			}
 		}
 	}
 }

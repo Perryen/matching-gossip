@@ -38,9 +38,9 @@ var (
 	bindAddr string
 	advertiseAddr string
 	bindPort int
+	neighbors = make([]string, 0)
 	memberlistAddr string
 	memberlistPort int
-	neighbors []string
 	port int
 	node *snowflake.Node
 )
@@ -65,7 +65,6 @@ func init() {   // 初始化函数
 		fmt.Print(err.Error())
 		panic("配置文件解析失败")
 	}
-	neighbors = cfg.Section(*nodeName).Key("neighbors").Strings(",")
 	port, err = cfg.Section(*nodeName).Key("port").Int()
 	if err != nil {
 		fmt.Print(err.Error())
@@ -199,7 +198,7 @@ func (d *delegate) MergeRemoteState(buf []byte, join bool) {
 	for k, v := range m {
 		items[k] = v
 	}
-	mtx.Unlock()
+	mtx.Unlock() 
 }
 
 type broadcast struct {
@@ -304,7 +303,7 @@ func start() error {
 	c.AdvertiseAddr = advertiseAddr
 	c.AdvertisePort = bindPort
 	c.Neighbors = neighbors
-	c.PushPullInterval = 0 // 禁用PushPull协程(即反熵传播)
+	c.PushPullInterval = 0
 	c.GossipNodes = *gossipNodes 
 	c.UDPBufferSize = *UDPBufferSize
 	c.RetransmitMult = *systemBroadcastMult

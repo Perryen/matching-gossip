@@ -1,9 +1,8 @@
-## match-gossip: 对传统gossip在拓扑失配性上的改进
+## Matching-gossip: 对传统gossip在拓扑失配性上的改进
 
 ### 实验介绍
 
-本实验是对第三章提出的改进gossip协议——matching-gossip协议的实验。经典gossip和matching-gossip都基于memberlist实现。主要有三个实验，主要是测试包括总线拓扑、环形拓扑、不同维度超立方体拓扑的收敛时间和网络负载。
-
+本实验是对第三章提出的改进gossip协议——Matching-gossip协议的实验。经典gossip和matching-gossip都基于memberlist实现。主要有三个实验，主要是测试包括总线拓扑、环形拓扑、不同维度超立方体拓扑的收敛时间和网络负载。
 我们主要在两台主机之间进行实验，每台主机有整体集群一半的节点。同一台主机上的不同节点用不同端口号标识。每个节点运行一个进程，整个集群表示为类似于redis的KV键值对数据库，通过gossip协议来同步不同节点的信息。
 
 我们通过在一些关键时刻记录相关信息和当前时间（精确到纳秒）到日志文件中，然后分析日志文件计算收敛时间和网络负载。具体来说，当一个节点（通常是种子节点）获得一条新信息，则其记录'I create a message called {messsageID}, now time {nowTime}, broadcast to others'，如果节点收到一条用户自定义信息，则其记录'I receive a message called {messageID}, now time is {nowTime}',如果一个节点要发送一条用户自定义信息，则其记录'I send a packet to {addr}, now time {nowTime}'。这样我们通过访问种子节点运行的KV键值对网络程序，即可给集群一个新信息，经过一段足够长的时间，收集所有节点的日志，读取日志文件，计算新信息的创造时间`begin_time`，然后记录其他节点收到该条信息的`receive_time`，取最晚的`receive_time`减去`begin_time`即为整个系统的**收敛时间**。
