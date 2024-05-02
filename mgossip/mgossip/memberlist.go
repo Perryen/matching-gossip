@@ -71,7 +71,7 @@ type Memberlist struct {
 
 	neighbors []*nodeState  // 直接邻居节点列表
 
-	respTime  map[string]int64   // 自动探测记录回复时间
+	respTime  map[*nodeState]int64   // 自动探测记录回复时间
 }
 
 // BuildVsnArray creates the array of Vsn
@@ -210,7 +210,7 @@ func newMemberlist(conf *Config) (*Memberlist, error) {
 		logger:               logger,
 		metricLabels:         conf.MetricLabels,
 		neighbors:            make([]*nodeState, 0),
-		respTime:             make(map[string]int64, 0),
+		respTime:             make(map[*nodeState]int64, 0),
 	}
 	m.broadcasts.NumNodes = func() int {
 		return m.estNumNodes()
@@ -806,19 +806,16 @@ func (m *Memberlist) SendMsg(to *Node, msg []byte, msgType messageType) error {
 func (m *Memberlist) SelectNearestNeighbor(nodeNum int) {
 	log.Println("begin to ping all the nodes")
 	// send ping msg to all nodes
-	nodes := make([]string, 0)
+	nodes := make([]*nodeState, 0)
 	for _, node := range m.nodes {
-		if node.Address() == fmt.Sprintf("%s:%d", m.config.BindAddr, m.config.BindPort) {
-			continue
-		}
 		// Attempt a push pull
 		if err := m.pushPullNode(node.FullAddress(), false); err != nil {
 			m.logger.Printf("[ERR] memberlist: Push/Pull with %s failed: %s", node.Name, err)
 		}
 		msg := fmt.Sprintf("Ping: ping from %s:%d", m.config.BindAddr, m.config.BindPort)
 		m.SendMsg(&node.Node, []byte(msg), pingNodeMsg)
-		m.respTime[node.Address()] = time.Now().UnixMicro()
-		nodes = append(nodes, node.Address())
+		m.respTime[node] = time.Now().UnixMicro()
+		nodes = append(nodes, node)
 	}
 	time.Sleep(3 * time.Second)
 	// begin to choose nearest node
@@ -831,10 +828,6 @@ func (m *Memberlist) SelectNearestNeighbor(nodeNum int) {
 		m.neighbors = append(m.neighbors, node)
 		log.Println("the neighbors list after updated", m.neighbors)
 		msg := fmt.Sprintf("Neighbor: neighbor conn from %s:%d", m.config.BindAddr, m.config.BindPort)
-		for _, each_node := range m.nodes {
-			if each_node.Address() == node {
-				m.SendMsg(&each_node.Node, []byte(msg), neighborMsg)
-			}
-		}
+		m.SendMsg(&node.Node, []byte(msg), neighborMsg)
 	}
 }

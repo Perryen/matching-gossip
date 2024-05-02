@@ -789,14 +789,14 @@ func (m *Memberlist) handlePingNode(buf []byte, from net.Addr) {
 // handlePong is used to handle pongMsg
 func (m *Memberlist) handlePong(buf []byte, from net.Addr) {
 	nowTime := time.Now().UnixMicro()
-	if m.respTime[from.String()] > 0 && nowTime > m.respTime[from.String()] {
-		m.respTime[from.String()] = nowTime - m.respTime[from.String()]
+	if m.respTime[m.nodeMap[from.String()]] > 0 && nowTime > m.respTime[m.nodeMap[from.String()]] {
+		m.respTime[m.nodeMap[from.String()]] = nowTime - m.respTime[m.nodeMap[from.String()]]
 	}
 }
 
 // handleNeighbor is used to handle NeighborMsg
 func (m *Memberlist) handleNeighbor(buf []byte, from net.Addr) {
-	m.neighbors = append(m.neighbors, from.String())
+	m.neighbors = append(m.neighbors, m.nodeMap[from.String()])
 	log.Println("the neighbors list after updated:", m.neighbors)
 }
 

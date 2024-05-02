@@ -1,6 +1,6 @@
 module github.com/zhuohuashiyi/mgossip
 
-go 1.18
+go 1.21
 
 require (
 	github.com/armon/go-metrics v0.0.0-20180917152333-f0300d1749da
@@ -11,12 +11,10 @@ require (
 	github.com/hashicorp/go-multierror v1.0.0
 	github.com/hashicorp/go-sockaddr v1.0.0
 	github.com/miekg/dns v1.1.26
-	github.com/pborman/uuid v1.2.1
 	github.com/sean-/seed v0.0.0-20170313163322-e2103e2c3529
 )
 
 require (
-	github.com/google/uuid v1.0.0 // indirect
 	github.com/hashicorp/errwrap v1.0.0 // indirect
 	github.com/hashicorp/go-immutable-radix v1.0.0 // indirect
 	github.com/hashicorp/golang-lru v0.5.0 // indirect
