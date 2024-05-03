@@ -122,14 +122,14 @@ sudo apt-get install docker.io  # 安装docker
 # 以下是Docker 打包命令
 sudo docker build -t mgossip:v1.0 .
 
-sudo docker pull zhuohuashiyi/mgossip:v1.0
-sudo docker run -it --name mgossip-master  zhuohuashiyi/mgossip:v1.0  # 运行主服务器容器
-sudo docker run -it --name mgossip-slave zhuohuashiyi/mgossip:v1.0  # 运行从服务器容器
+sudo docker pull mingroup/mgossip:v1.0
+sudo docker run -it --name mgossip-master  mingroup/mgossip:v1.0  # 运行主服务器容器
+sudo docker run -it --name mgossip-slave mingroup/mgossip:v1.0  # 运行从服务器容器
 
 service ssh restart  # 从服务器上运行
 cd $WORKDIR && scp root@172.17.0.3:/Gossip/slave.py slave.py  # 提示输入yes
 
 # 接下来可以像上面一样单个单个进行实验，也可以如下进行批量实验
-python3 slave.py  # 从服务器
+cd $WORKDIR && python3 slave.py  # 从服务器
 python3 master.py  # 主服务器
 ```

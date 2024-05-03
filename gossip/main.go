@@ -31,6 +31,7 @@ var (
   	configFile    = flag.String("conf", "config.ini", "配置文件地址")
   	nodeName      = flag.String("nodeName", "firstNode", "节点名称")
 	gossipNodes   = flag.Int("gossipNodes", 2, "谣言传播节点个数")
+	retransmitMult = flag.Int("retransmitMult", 1, "重试次数")
   	bindAddr string
   	bindPort int
   	memberlistAddr string
@@ -312,7 +313,7 @@ func start() error {
 		NumNodes: func() int {
 			return m.NumMembers()
 		},
-		RetransmitMult: 3,  // memberlist对于每条信息大概重发3 * log(N + 1)次
+		RetransmitMult: *retransmitMult,  // memberlist对于每条信息大概重发3 * log(N + 1)次
 	}
 	node := m.LocalNode()
 	fmt.Printf("Local member %s:%d\n", node.Addr, node.Port)

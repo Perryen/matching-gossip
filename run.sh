@@ -15,8 +15,9 @@ isMaster=$5
 port1=$6  # 30000
 port2=$7  # 30500
 gossipNodes=$8
-limitTime=$9
-portNum=${10}
+retranmult=$9
+limitTime=${10}
+portNum=${11}
 node='Node'
 
 # 根据是运行经典Gossip还是改进Gossip实验进入不同的目录
@@ -42,7 +43,7 @@ fi
 
 for ((i=firstNode; i<=endNode; i++)); do
     # 使用nohup在后台运行main.go程序，即运行一个网络节点
-    nohup go run main.go -nodeName ${node}${i} -conf $confFile -gossipNodes $gossipNodes > /dev/null 2>&1 &
+    nohup go run main.go -nodeName ${node}${i} -conf $confFile -gossipNodes $gossipNodes -retransmitMult $retranmult> /dev/null 2>&1 &
     if [[ $isMaster -eq 1 && i -eq firstNode ]]; then  # 种子节点默认是主服务器上的第一个节点
         sleep 3
     fi

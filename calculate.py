@@ -6,7 +6,7 @@ import re
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-logs_dir", help="your logs dirctory", default="MGossip/logs", type=str)
+parser.add_argument("-logs_dir", help="your logs dirctory", default="mgossip/logs", type=str)
 parser.add_argument("-gossip_interval", help="your gossip interval", default=100000000, type=int)
 parser.add_argument("-limit_time", help="your limitTime to test the total packet sent", default=500000000, type=int)
 args = parser.parse_args()
