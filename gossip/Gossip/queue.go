@@ -296,6 +296,10 @@ func (q *TransmitLimitedQueue) GetBroadcasts(overhead, limit int) [][]byte {
 
 	transmitLimit := retransmitLimit(q.RetransmitMult, q.NumNodes())
 
+	// baseline gossip for WangHan
+	 
+	transmitLimit = 2
+
 	var (
 		bytesUsed int
 		toSend    [][]byte
