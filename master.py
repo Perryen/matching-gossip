@@ -36,6 +36,7 @@ def main():
     probe_interval = 10
     gossip_nodes = 3
     retran_mult = 10
+    directNeighborCount = 3
     
     
     
@@ -54,14 +55,14 @@ def main():
             nodes.pop(0)
             
             for mode in ['mgossip', 'gossip']:
-                master_command = f"bash run.sh {mode} config/{configFile}.ini 1 {nodes_num} 1 {gossip_nodes} {retran_mult} {clusterInitTime} {packetDiffuseTime} {slaveWaitTime} {UDP_buffer_size} {system_broadcast_mult} {probe_interval}"
+                master_command = f"bash run.sh {mode} config/{configFile}.ini 1 {nodes_num} 1 {gossip_nodes} {retran_mult} {clusterInitTime} {packetDiffuseTime} {slaveWaitTime} {UDP_buffer_size} {system_broadcast_mult} {probe_interval} {directNeighborCount}"
                 i = 0
                 while i < 20:
                     # 这里另开一个线程的原因是为了快速同步从服务器，使从服务器几乎同步运行对应的命令
                     try:
                         threading.Thread(target=lambda c: os.system(c), args=(master_command,)).start()
                         for j, slave_addr in enumerate(nodes):
-                            slave_command = f"bash run.sh {mode} config/{configFile}.ini {nodes_num * (j + 1) + 1} {nodes_num * (j + 2)} 0 {gossip_nodes} {retran_mult} {clusterInitTime} {packetDiffuseTime} {slaveWaitTime} {UDP_buffer_size} {system_broadcast_mult} {probe_interval}"
+                            slave_command = f"bash run.sh {mode} config/{configFile}.ini {nodes_num * (j + 1) + 1} {nodes_num * (j + 2)} 0 {gossip_nodes} {retran_mult} {clusterInitTime} {packetDiffuseTime} {slaveWaitTime} {UDP_buffer_size} {system_broadcast_mult} {probe_interval} {directNeighborCount}"
                             requests.get(f'http://{slave_addr}:30600/execute?command={slave_command}')
                         
                         sleep_time = clusterInitTime + packetDiffuseTime + masterWaitTime

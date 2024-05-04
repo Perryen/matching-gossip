@@ -34,6 +34,7 @@ var (
 	UDPBufferSize = flag.Int("UDPBufferSize", 1400, "UDP包的最大长度")
 	systemBroadcastMult = flag.Int("systemBroadcastMult", 1, "系统广播队列的重传次数因子")
 	probeInterval = flag.Int("probeInterval", 5, "probe定时")
+	directNeighborCount = flag.Int("directNeighborCount", 3, "自动探测")
 	messages = map[int64]int64{}
 	bindAddr string
 	advertiseAddr string
@@ -327,6 +328,8 @@ func start() error {
 			return err
 		}
 	}
+
+	go m.SelectNearestNeighbor(*directNeighborCount)
 	node := m.LocalNode()
 	fmt.Printf("Local member %s:%d\n", node.Addr, node.Port)
 	return nil

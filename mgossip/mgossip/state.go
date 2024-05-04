@@ -1050,11 +1050,7 @@ func (m *Memberlist) aliveNode(a *alive, notify chan struct{}, bootstrap bool) {
 
 		// Add at the end and swap with the node at the offset
 		m.nodes = append(m.nodes, state)
-
-		// 如果是邻居则增加节点
-		if find(m.config.Neighbors, state.Node.Address()) != -1 {
-			m.neighbors = append(m.neighbors, state)
-		}
+		
 		m.nodes[offset], m.nodes[n] = m.nodes[n], m.nodes[offset]
 
 		// Update numNodes after we've added a new node

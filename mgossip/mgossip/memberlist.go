@@ -13,7 +13,6 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
-	"sort"
 
 	"github.com/armon/go-metrics"
 	multierror "github.com/hashicorp/go-multierror"
@@ -283,7 +282,7 @@ func (m *Memberlist) Join(existing []string) (int, error) {
 			}
 			numSuccess++
 		}
-	
+		
 		
 
 	}
@@ -805,11 +804,15 @@ func (m *Memberlist) SendMsg(to *Node, msg []byte, msgType messageType) error {
 
 // automatically ping all the nodes and select the minimum cost time, connected to each other
 func (m *Memberlist) SelectNearestNeighbor(nodeNum int) {
-	log.Println("begin to ping all the nodes")
+	m.logger.Println("begin to ping all the nodes")
 	// send ping msg to all nodes
 	nodes := make([]*nodeState, 0)
 	for _, node := range m.nodes {
 		// Attempt a push pull
+		if m.config.Name == node.String() {
+			continue
+		}
+
 		if err := m.pushPullNode(node.FullAddress(), false); err != nil {
 			m.logger.Printf("[ERR] memberlist: Push/Pull with %s failed: %s", node.Name, err)
 		}
@@ -827,7 +830,7 @@ func (m *Memberlist) SelectNearestNeighbor(nodeNum int) {
 	nodeNum = min(nodeNum, len(nodes))
 	for _, node := range nodes[: nodeNum] {
 		m.neighbors = append(m.neighbors, node)
-		log.Println("the neighbors list after updated", m.neighbors)
+		m.logger.Println("the neighbors list after updated", m.neighbors)
 		msg := fmt.Sprintf("Neighbor: neighbor conn from %s:%d", m.config.BindAddr, m.config.BindPort)
 		m.SendMsg(&node.Node, []byte(msg), neighborMsg)
 	}

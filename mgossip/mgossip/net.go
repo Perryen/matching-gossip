@@ -796,6 +796,7 @@ func (m *Memberlist) handlePong(buf []byte, from net.Addr) {
 
 // handleNeighbor is used to handle NeighborMsg
 func (m *Memberlist) handleNeighbor(buf []byte, from net.Addr) {
+	m.logger.Printf("%v, %v", m.nodeMap, from.String())
 	m.neighbors = append(m.neighbors, m.nodeMap[from.String()])
 	log.Println("the neighbors list after updated:", m.neighbors)
 }
